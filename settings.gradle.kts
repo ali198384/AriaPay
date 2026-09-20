@@ -31,4 +31,5 @@ rootProject.name = "AriaPay"
 include(":app")
 include(":core:common")
 include(":core:model")
+include(":core:domain")
 include(":feature:home")
