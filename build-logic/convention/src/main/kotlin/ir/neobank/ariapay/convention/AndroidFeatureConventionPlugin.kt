@@ -8,7 +8,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply("ir.neobank.ariapay.android.library")
-            pluginManager.apply("ir.neobank.ariapay.android.compose")
+            pluginManager.apply("ir.neobank.ariapay.android.library.compose")
             pluginManager.apply("ir.neobank.ariapay.hilt")
 
             dependencies {

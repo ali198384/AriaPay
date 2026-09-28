@@ -42,13 +42,17 @@ gradlePlugin {
             id = "ir.neobank.ariapay.android.library"
             implementationClass = "ir.neobank.ariapay.convention.AndroidLibraryConventionPlugin"
         }
+        register("androidLibraryCompose") {
+            id = "ir.neobank.ariapay.android.library.compose"
+            implementationClass = "ir.neobank.ariapay.convention.AndroidLibraryComposeConventionPlugin"
+        }
+        register("androidApplicationCompose") {
+            id = "ir.neobank.ariapay.android.application.compose"
+            implementationClass = "ir.neobank.ariapay.convention.AndroidApplicationComposeConventionPlugin"
+        }
         register("androidFeature") {
             id = "ir.neobank.ariapay.android.feature"
             implementationClass = "ir.neobank.ariapay.convention.AndroidFeatureConventionPlugin"
-        }
-        register("androidCompose") {
-            id = "ir.neobank.ariapay.android.compose"
-            implementationClass = "ir.neobank.ariapay.convention.AndroidComposeConventionPlugin"
         }
         register("hilt") {
             id = "ir.neobank.ariapay.hilt"

@@ -4,9 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Surface
 import dagger.hilt.android.AndroidEntryPoint
+import ir.neobank.ariapay.core.designsystem.theme.AriaTheme
 import ir.neobank.ariapay.feature.home.HomeRoute
-import ir.neobank.ariapay.ui.theme.AriaPayTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -14,8 +15,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AriaPayTheme {
-                HomeRoute()
+            AriaTheme {
+                Surface {
+                    HomeRoute()
+                }
             }
         }
     }

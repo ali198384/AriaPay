@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.ariapay.android.application)
-    alias(libs.plugins.ariapay.android.compose)
+    alias(libs.plugins.ariapay.android.application.compose)
     alias(libs.plugins.ariapay.hilt)
 }
 
@@ -38,6 +38,8 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.core.common)
     implementation(projects.core.model)
+    implementation(projects.core.designsystem)
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
 }
