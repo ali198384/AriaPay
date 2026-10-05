@@ -44,17 +44,6 @@ fun AriaTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     val transformation = remember(type) { type.transformation() }
-    /*val textStyle = if (type == AriaFieldType.Amount) {
-        MaterialTheme.typography.titleLarge
-    } else {
-        MaterialTheme.typography.bodyLarge
-    }.copy(
-        fontFeatureSettings = "tnum",
-        textDirection = type.textDirection(),
-        color = MaterialTheme.colorScheme.onSurface,
-    )*/
-
-
     val textStyle = if (type == AriaFieldType.Amount) {
         MaterialTheme.typography.titleLarge
     } else {
@@ -236,7 +225,7 @@ private fun AriaTextFieldPreview() {
             )
             AriaTextField(
                 value = card,
-                onValueChange = { sheba = it },
+                onValueChange = { card = it },
                 label = "شماره کارت",
                 type = AriaFieldType.Card,
             )

@@ -36,9 +36,11 @@ android {
 
 dependencies {
     implementation(projects.feature.home)
+    implementation(projects.core.data)
     implementation(projects.core.common)
     implementation(projects.core.model)
     implementation(projects.core.designsystem)
+    implementation(projects.core.datastore)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)

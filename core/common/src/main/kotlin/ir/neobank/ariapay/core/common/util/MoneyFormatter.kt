@@ -1,7 +1,6 @@
 package ir.neobank.ariapay.core.common.util
 
 import java.util.Locale
-import kotlin.math.abs
 import kotlin.text.iterator
 
 object MoneyFormatter {
@@ -13,9 +12,8 @@ object MoneyFormatter {
         formatAmount(rials / 10, unit = "تومان", persianDigits)
 
     private fun formatAmount(amount: Long, unit: String, persianDigits: Boolean): String {
-        val sign = if (amount < 0) "-" else ""
-        val grouped = "%,d".format(Locale.US, abs(amount)).replace(',', '٬')
-        val body = if (persianDigits) toPersianDigits(sign + grouped) else sign + grouped
+        val grouped = "%,d".format(Locale.US, amount).replace(',', '٬')
+        val body = if (persianDigits) toPersianDigits(grouped) else grouped
         return "$body $unit"
     }
 

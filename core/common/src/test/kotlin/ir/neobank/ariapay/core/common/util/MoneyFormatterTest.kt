@@ -24,4 +24,10 @@ class MoneyFormatterTest {
     fun `zero rial`() {
         Truth.assertThat(MoneyFormatter.formatRials(0L)).isEqualTo("۰ ریال")
     }
+
+    @Test
+    fun `formats the smallest Long without overflowing its absolute value`() {
+        Truth.assertThat(MoneyFormatter.formatRials(Long.MIN_VALUE))
+            .isEqualTo("−۹٬۲۲۳٬۳۷۲٬۰۳۶٬۸۵۴٬۷۷۵٬۸۰۸ ریال")
+    }
 }

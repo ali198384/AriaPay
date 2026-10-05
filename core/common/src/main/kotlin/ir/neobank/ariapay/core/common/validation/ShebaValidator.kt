@@ -1,12 +1,14 @@
 package ir.neobank.ariapay.core.common.validation
 
+import ir.neobank.ariapay.core.common.util.IranianDigits
+
 object IranShebaValidator {
 
     fun isValid(raw: String): Boolean {
-        val sheba = raw.replace(" ", "").uppercase()
+        val sheba = IranianDigits.toEnglish(raw.filterNot(Char::isWhitespace)).uppercase()
         if (sheba.length != 26) return false
         if (!sheba.startsWith("IR")) return false
-        if (!sheba.drop(2).all { it.isDigit() }) return false
+        if (!sheba.drop(2).all { it in '0'..'9' }) return false
 
         // ISO 13616: ۴ نویسه اول برود ته؛ A=10 … Z=35
         val rearranged = sheba.substring(4) + sheba.substring(0, 4)

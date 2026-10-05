@@ -21,8 +21,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     .joinToString(separator = "_")
                     .lowercase() + "_"
             }
-
-            configureJunit5()
         }
     }
 }

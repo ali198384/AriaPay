@@ -8,7 +8,7 @@ value class Money private constructor(val amountInRials: Long) {
 
     fun toTomans(): Long = amountInRials / 10L
 
-    operator fun plus(other: Money): Money = Money(amountInRials + other.amountInRials)
+    operator fun plus(other: Money): Money = Money(Math.addExact(amountInRials, other.amountInRials))
 
     operator fun minus(other: Money): Money {
         require(amountInRials >= other.amountInRials) { "موجودی کافی نیست" }
@@ -18,6 +18,6 @@ value class Money private constructor(val amountInRials: Long) {
     companion object {
         val ZERO = Money(0L)
         fun rials(rial: Long): Money = Money(rial)
-        fun tomans(toman: Long): Money = Money(toman * 10L)
+        fun tomans(toman: Long): Money = Money(Math.multiplyExact(toman, 10L))
     }
 }

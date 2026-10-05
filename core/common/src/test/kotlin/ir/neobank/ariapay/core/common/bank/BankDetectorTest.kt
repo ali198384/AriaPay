@@ -23,4 +23,13 @@ class BankDetectorTest {
         val bank = BankDetector.findByCard("5894630000000002")
         assertThat(bank?.persianName).isEqualTo("بانک رفاه کارگران")
     }
+
+    @Test
+    fun `persian digits are normalized before bank detection`() {
+        val cardBank = BankDetector.findByCard("۶۰۳۷۹۹۰۰۰۰۰۰۰۰۰۶")
+        val shebaBank = BankDetector.findBySheba("IR۱۱۰۶۳۰۰۰۰۰۰۰۰۰۰۰۰۰۰۰۰۰۰۱")
+
+        assertThat(cardBank?.persianName).isEqualTo("بانک ملی")
+        assertThat(shebaBank?.persianName).isEqualTo("بانک سپه")
+    }
 }

@@ -1,25 +1,25 @@
 # AriaPay
 
-نئوبانک دمو برای مصاحبه Senior Android — معماری، مدل پول، امنیت لایهٔ اپ، و تست.
+نمونه‌کار FinTech برای مصاحبهٔ Android — مدل پول، اعتبارسنجی ورودی و ساختار ماژولار.
 
 این اپ به بانک واقعی وصل نیست. داده و API کاملاً نمایشی‌اند.
 
-`minSdk 26` · Kotlin 2.x · Compose · Hilt · UDF/MVI · Offline-first
+`minSdk 26` · Kotlin 2.x · Compose · Hilt · هدف معماری: UDF/MVI و Offline-first
 
 ---
 
-## این ریپو چه چیزی را نشان می‌دهد
+## وضعیت پیاده‌سازی فعلی
 
-- مدل پول با `value class Rial(val value: Long)` — بدون `Double`/`Float`
-- دامنهٔ خالص JVM؛ قوانین کسب‌وکار بدون امولاتور تست می‌شوند
-- ماژولار واقعی: `:feature:*` همدیگر را نمی‌بینند
-- Offline-first: Room منبع حقیقت است، شبکه فقط refresh
-- امنیت به‌صورت لایه (Keystore، Biometric، redaction) نه `if` پراکنده
-- CI روی PR: تست + Detekt + ممنوعیت مبلغ اعشاری
+- `Money` مبلغ را با `Long` و برحسب ریال نگه می‌دارد؛ جمع و تبدیل تومان در سرریز خطا می‌دهند.
+- `:core:model`، `:core:common` و `:core:domain` ماژول‌های Kotlin/JVM هستند و تست‌هایشان روی JVM اجرا می‌شوند.
+- اعتبارسنجی کارت و شبا، تشخیص بانک، مقصدهای انتقال کارت/شبا/موبایل و پیش‌نویس با مبلغ مثبت وجود دارد.
+- منطق و دادهٔ آزمایشی OTP وجود دارد؛ هنوز صفحهٔ ورود به آن وصل نشده است.
+- GitHub Actions دستور Gradle `build` را اجرا می‌کند؛ Detekt، تست دستگاهی و انتشار APK هنوز در CI تنظیم نشده‌اند.
+- UI فعلی فقط صفحهٔ خانهٔ نمایشی است. انتقال وجه، کیف پول، تاریخچه، ذخیره‌سازی Room و قابلیت‌های Biometric هنوز کامل پیاده‌سازی نشده‌اند.
 
 ---
 
-## جریان محصول
+## جریان هدف محصول (نقشهٔ راه)
 
 ```text
 ورود
@@ -53,9 +53,9 @@
 
 ---
 
-## معماری
+## معماری هدف
 
-الگوی اصلی پروژه:
+این الگو مقصد معماری است؛ فعلاً بخشی از قطعات زیرساخت و مدل‌های JVM پیاده‌سازی شده‌اند.
 
 **Android Architecture + UDF + Offline-first**
 
@@ -71,7 +71,7 @@ UseCase
       ↓
  Repository
       ↓
-Room / DataStore / FakeApi
+Room / DataStore / FakeAuthRemoteDataSourceImpl
       ↓
 StateFlow<UiState>
       +
@@ -80,18 +80,19 @@ SharedFlow<UiEffect>
 
 ### جملهٔ کوتاه برای مصاحبه
 
-> معماری رسمی Android را با UDF و رویکرد offline-first پیاده‌سازی کرده‌ام.
-> لایهٔ Domain را مستقل نگه داشته‌ام تا قوانین مالی مثل ریال و شبا بدون وابستگی به Android قابل تست باشند.
+> مدل‌ها و اعتبارسنجی‌های اصلی را در ماژول‌های Kotlin/JVM نگه داشته‌ام تا بدون اجرای امولاتور تست شوند. جریان UI و ذخیره‌سازی offline-first هنوز در نقشهٔ راه است.
 
 ---
 
 ## قوانین غیرقابل مذاکره
 
+این‌ها قراردادهای طراحی برای قابلیت‌هایی هستند که مرحله‌به‌مرحله پیاده‌سازی می‌شوند؛ همهٔ آن‌ها هنوز با ابزار خودکار کنترل نمی‌شوند.
+
 1. ماژول `:core:domain` به Android، Retrofit، Room یا Compose وابستگی ندارد.
 2. Featureها به یکدیگر Dependency ندارند.
 3. `NavHost` فقط در ماژول `:app` قرار دارد.
 4. مبلغ در کل Domain فقط با `Rial` و از نوع `Long` نگهداری می‌شود.
-5. استفاده از `Double` و `Float` برای پول توسط `Detekt` رد می‌شود.
+5. برای پول از `Double` و `Float` استفاده نمی‌کنیم؛ قاعدهٔ خودکار Detekt هنوز تنظیم نشده است.
 6. `PAN` کامل، `CVV`، `PIN` و `OTP` در Log، Room یا Analytics ذخیره نمی‌شوند.
 7. `Biometric`، `Clock`، `RNG` و `RootDetector` پشت Interface قرار دارند تا قابل Fake شدن باشند.
 8. هر صفحهٔ P0 چهار وضعیت اصلی دارد:
@@ -106,7 +107,7 @@ Error
 9. تبدیل تومان و نمایش اعداد فارسی فقط در UI انجام می‌شود.
 10. Domain فقط با ریال کار می‌کند.
 
-جزئیات تصمیم‌های معماری در مسیر زیر قرار دارند:
+تصمیم‌های معماری جدید را در مسیر زیر ثبت می‌کنیم:
 
 ```text
 docs/adr/
@@ -114,7 +115,7 @@ docs/adr/
 
 ---
 
-## ماژول‌ها
+## ماژول‌های فعلی و نقشهٔ راه
 
 Package اصلی:
 
@@ -122,13 +123,13 @@ Package اصلی:
 ir.ariapay
 ```
 
-ساختار پروژه:
+ماژول‌های موجود:
 
 ```text
 AriaPay
 │
 ├── app/
-│   └── NavHost, Hilt, Flavors
+│   └── MainActivity و راه‌اندازی Compose/Hilt
 │
 ├── build-logic/
 │   └── Convention Plugins
@@ -136,42 +137,34 @@ AriaPay
 ├── core/
 │   │
 │   ├── common/
-│   │   └── Result, AppError, DispatcherProvider
+│   │   └── اعتبارسنجی کارت و شبا، تشخیص بانک، ابزارهای مشترک
+│   │
+│   ├── model/
+│   │   └── Money و مدل بانک
 │   │
 │   ├── domain/
-│   │   └── Models, UseCases, Repository Interfaces
+│   │   └── مدل‌ها و UseCaseهای OTP، مقصدهای انتقال
 │   │
 │   ├── data/
 │   │   └── Repository Implementations
 │   │
 │   ├── database/
-│   │   └── Room
+│   │   └── اسکلت Room؛ هنوز Entity/DAO کسب‌وکار ندارد
 │   │
 │   ├── network/
-│   │   └── Retrofit + FakeApi
+│   │   └── منبع آزمایشی OTP
 │   │
 │   ├── datastore/
 │   │   └── DataStore
 │   │
-│   ├── security/
-│   │   └── Security Abstractions
-│   │
-│   ├── ui/
-│   │   └── Design System, RTL, Persian Numbers
+│   ├── designsystem/
+│   │   └── Compose theme و اجزای رابط کاربری
 │   │
 │   └── testing/
 │       └── Fakes, TestDispatcher
 │
 └── feature/
-    │
-    ├── auth/
-    ├── home/
-    ├── wallet/
-    ├── transfer/
-    ├── transactions/
-    ├── profile/
-    ├── bills/
-    └── cards/
+    └── home/ (فعلاً فقط این feature وجود دارد)
 
 ```
 
@@ -179,24 +172,18 @@ AriaPay
 
 ## استک
 
-| حوزه                  | تکنولوژی                         |
-| --------------------- | -------------------------------- |
-| UI                    | Jetpack Compose + Material 3     |
-| Navigation            | Navigation 2 با Type-safe Routes |
-| DI                    | Hilt                             |
-| Database              | Room                             |
-| Preferences           | DataStore                        |
-| Network               | Retrofit                         |
-| Serialization         | Kotlinx Serialization            |
-| Architecture          | Clean Architecture + UDF         |
-| State                 | StateFlow                        |
-| Events                | SharedFlow                       |
-| Testing               | JUnit 5 + Turbine + Fake         |
-| Network Testing       | MockWebServer                    |
-| Screenshot Testing    | Paparazzi                        |
-| Code Quality          | Detekt + Spotless                |
-| CI/CD                 | GitHub Actions                   |
-| Memory Leak Detection | LeakCanary در Debug              |
+| حوزه                  | وضعیت فعلی                                                  |
+| --------------------- | ----------------------------------------------------------- |
+| UI                    | Jetpack Compose + Material 3؛ فعلاً صفحهٔ خانهٔ نمایشی      |
+| DI                    | Hilt به اپ اضافه شده؛ تزریق وابستگی هنوز گسترده نشده        |
+| Database              | Room با اسکیمای موقت؛ Entity و DAO کسب‌وکار هنوز ندارد      |
+| Preferences           | DataStore برای توکن نمونهٔ احراز هویت                       |
+| Network               | منبع دادهٔ آزمایشی OTP؛ Retrofit و API انتقال وجود ندارد    |
+| Architecture          | ماژول‌های JVM برای model، common و domain                   |
+| Testing               | تست واحد JUnit 5 و Truth؛ اجرای محلی هنوز نیاز به تأیید دارد |
+| CI                    | GitHub Actions با اجرای Gradle `build`                       |
+
+Navigation، جریان UDF در UI، offline-first، Detekt، تست دستگاهی و انتشار APK در نقشهٔ راه هستند؛ هنوز پیاده‌سازی نشده‌اند.
 
 ---
 
@@ -208,7 +195,7 @@ AriaPay
 Android Studio
 Kotlin 2.x
 AGP فعلی پروژه
-JDK 17
+JDK 25 برای اجرای Gradle (کد اپ با JVM target 17 ساخته می‌شود)
 Android Emulator API 26+
 ```
 
@@ -225,36 +212,68 @@ cd AriaPay
 ./gradlew test
 ```
 
-### اجرای نسخهٔ Demo
+یک تست واحد معمولاً سه بخش دارد: ورودی را آماده می‌کنیم (**Arrange**)، تابع را اجرا می‌کنیم (**Act**) و نتیجه را می‌سنجیم (**Assert**). مثلاً:
+
+```kotlin
+import com.google.common.truth.Truth.assertThat
+import ir.neobank.ariapay.core.domain.auth.MobileNumber
+import org.junit.jupiter.api.Test
+
+class MobileNumberTest {
+    @Test
+    fun `شماره فارسی به رقم لاتین تبدیل می‌شود`() {
+        // Arrange: ورودی فارسی
+        val input = "۰۹۱۲۳۴۵۶۷۸۹"
+
+        // Act: اجرای تابعی که می‌خواهیم بررسی کنیم
+        val result = MobileNumber.parse(input)
+
+        // Assert: مقایسه با نتیجهٔ مورد انتظار
+        assertThat(result?.value).isEqualTo("09123456789")
+    }
+}
+```
+
+این تست به شبیه‌ساز نیاز ندارد؛ فقط منطق Kotlin را بررسی می‌کند.
+
+ماژول‌های `security`، `auth`، `wallet`، `transfer`، `transactions`، `profile`، `bills` و `cards` بخشی از نقشهٔ راه هستند و هنوز در مخزن ساخته نشده‌اند.
+
+تست‌های مسیر `src/test` روی JVM اجرا می‌شوند و معمولاً برای منطق دامنه و کلاس‌هایی که به Android وابسته نیستند مناسب‌اند. تست‌های `src/androidTest` روی شبیه‌ساز یا دستگاه اجرا می‌شوند و دستور جداگانهٔ `./gradlew connectedCheck` می‌خواهد.
+
+### CI فعلی
+
+فایل `.github/workflows/ci.yml` با هر `push` و هر `pull request` اجرا می‌شود. GitHub Actions کد را دریافت می‌کند، JDK 25 و Gradle را آماده می‌کند و دستور زیر را اجرا می‌کند:
 
 ```bash
-./gradlew installDemoDebug
+./gradlew build
 ```
 
-### Demo Flavor
+فایل `gradle/gradle-daemon-jvm.properties` نسخهٔ JVM مربوط به Gradle را روی 25 ثابت می‌کند. این JVM، JDKای است که خود Gradle با آن اجرا می‌شود؛ کامپایلر اپ همچنان با `jvmTarget = 17` خروجی سازگار با Java 17 می‌سازد. پس نسخهٔ JDK اجرای Gradle و نسخهٔ خروجی برنامه دو تنظیم جدا هستند.
 
-Flavor پیش‌فرض پروژه:
+این کار بررسی‌های متصل به وظیفهٔ Gradle به نام `build` را اجرا می‌کند. workflow فعلی شبیه‌ساز راه‌اندازی نمی‌کند؛ بنابراین تست‌های دستگاهی را اجرا نمی‌کند. همچنین در حال حاضر مرحلهٔ مستقلی برای Detekt، گزارش پوشش تست یا انتشار APK ندارد. هر کدام را بعد از یادگیری و اضافه‌کردن تنظیمات لازم، جداگانه به CI می‌افزاییم.
 
-```text
-demo
+**CI یعنی همین بررسی‌های خودکار بعد از push یا بازشدن PR.** اگر همان دستور روی سیستم خودت شکست بخورد، معمولاً CI هم شکست می‌خورد؛ پس اول اجرای محلی و خواندن خطا را تمرین می‌کنیم، بعد نتیجه را در بخش Actions گیت‌هاب می‌بینیم.
+
+### اجرای اپ فعلی
+
+```bash
+./gradlew installDebug
 ```
 
-نسخهٔ Demo از `FakeApi` استفاده می‌کند و به هیچ شبکهٔ بانکی واقعی متصل نیست.
+اپ فعلی فقط صفحهٔ خانه را نشان می‌دهد؛ منبع آزمایشی OTP هنوز به رابط کاربری متصل نیست.
 
 ---
 
 ## وضعیت پروژه
 
-**M0 — قرارداد و اسکلت**
-
-در این مرحله Feature مالی هنوز پیاده‌سازی نشده و تمرکز روی زیرساخت، قراردادهای معماری و آماده‌سازی پروژه است.
+زیرساخت پایه آماده است و کار Domain انتقال شروع شده؛ مسیر انتقال هنوز به UI یا ذخیره‌سازی وصل نیست.
 
 | Milestone | خروجی                                                                 |
 | --------- | --------------------------------------------------------------------- |
-| M0        | قرارداد معماری و اسکلت پروژه                                          |
-| M1        | Catalog، Convention Plugins، `Rial`، Validators ایران و اولین تست JVM |
-| M2        | UseCaseهای انتقال و تست‌های جدول‌محور                                 |
-| M3        | PIN، Biometric، قفل اپ و CI                                           |
+| M0        | قرارداد معماری و اسکلت پروژه — انجام‌شده                               |
+| M1        | ماژول‌های JVM، `Money`، اعتبارسنج‌ها و تست‌های JVM — انجام‌شده          |
+| M2        | مقصدها و پیش‌نویس مبلغ پیاده‌سازی شده؛ قیمت‌گذاری و UseCaseهای انتقال در صف توسعه |
+| M3        | CI ساخت پایه آماده؛ PIN، Biometric و بررسی کیفیت در صف توسعه           |
 | M4        | کیف پول Offline-first                                                 |
 | M5        | انتقال کامل + رسید؛ قلب رزومه                                         |
 | M6        | قبض                                                                   |
@@ -266,8 +285,9 @@ demo
 ## امنیت و محدوده
 
 * اطلاعات واقعی کارت، `CVV`، `PIN` و `OTP` ذخیره یا Log نمی‌شوند.
+* نشست ورود در Preferences DataStore ذخیره می‌شود و فایلش از پشتیبان ابری و انتقال دستگاهی مستثناست؛ رمزگذاری این فایل هنوز در نقشهٔ راه امنیت قرار دارد و در این مرحله فقط توکن نمایشی استفاده می‌شود.
 * پروژه به شاپرک، فینوتک یا هیچ بانک واقعی متصل نیست.
-* APIهای بانکی با `FakeApi` شبیه‌سازی می‌شوند.
+* هیچ API بانکی به پروژه متصل نیست؛ منبع شبکهٔ فعلی فقط رفتار آزمایشی OTP را شبیه‌سازی می‌کند.
 * این پروژه برای **مصاحبه، یادگیری و نمایش توانایی‌های معماری** ساخته شده است.
 * پروژه برای استفادهٔ Production یا انجام تراکنش مالی واقعی طراحی نشده است.
 * نام یا برند هیچ بانک ایرانی در پروژه استفاده نشده است.

@@ -1,15 +1,19 @@
 package ir.neobank.ariapay.core.common.validation
 
+import ir.neobank.ariapay.core.common.util.IranianDigits
 
 object LuhnValidator {
     /**
      * اعتبارسنجی شماره کارت ۱۶ رقمی براساس الگوریتم لاین (Luhn Algorithm)
      * طبق استاندارد بانکی شتاب، ضرب یک‌درمیان در ۲ انجام می‌شود.
-     */
+    */
     fun isValid(cardNumber: String): Boolean {
-        val sanitized = cardNumber.replace("-", "").replace(" ", "").trim()
+        val sanitized = IranianDigits.toEnglish(cardNumber)
+            .replace("-", "")
+            .replace(" ", "")
+            .trim()
 
-        if (sanitized.length != 16 || !sanitized.all { it.isDigit() }) {
+        if (sanitized.length != 16 || !sanitized.all { it in '0'..'9' }) {
             return false
         }
 

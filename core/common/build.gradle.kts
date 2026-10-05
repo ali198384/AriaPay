@@ -1,12 +1,8 @@
 plugins {
-    alias(libs.plugins.ariapay.android.library)
-}
-
-android {
-    namespace = "ir.neobank.ariapay.core.common"
+    alias(libs.plugins.ariapay.jvm.library)
 }
 
 dependencies {
-    implementation(projects.core.model)
+    api(projects.core.model)
     implementation(libs.kotlinx.coroutines.core)
 }

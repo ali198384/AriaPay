@@ -1,8 +1,3 @@
 plugins {
-    alias(libs.plugins.ariapay.android.library)
+    alias(libs.plugins.ariapay.jvm.library)
 }
-
-android {
-    namespace = "ir.neobank.ariapay.core.model"
-}
-

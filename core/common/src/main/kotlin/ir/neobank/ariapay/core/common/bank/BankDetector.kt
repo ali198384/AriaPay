@@ -1,6 +1,7 @@
 package ir.neobank.ariapay.core.common.bank
 
 
+import ir.neobank.ariapay.core.common.util.IranianDigits
 import ir.neobank.ariapay.core.model.IranianBank
 
 object BankDetector {
@@ -22,7 +23,9 @@ object BankDetector {
     }
 
     fun findByCard(raw: String): IranianBank? {
-        val digits = raw.filter(Char::isDigit)
+        val normalized = IranianDigits.toEnglish(raw)
+        if (normalized.any { it !in '0'..'9' && !it.isWhitespace() && it != '-' }) return null
+        val digits = normalized.filter { it in '0'..'9' }
         if (digits.length < 6) return null
         val bin = digits.take(6)
         return byBin[bin]?.withLegacy(bin)
@@ -32,9 +35,9 @@ object BankDetector {
         copy(legacyPersianName = IranianBankCatalog.legacyNames[key])
 
     private fun normalizeSheba(raw: String): String? {
-        val normalized = raw.filterNot(Char::isWhitespace).uppercase()
+        val normalized = IranianDigits.toEnglish(raw.filterNot(Char::isWhitespace)).uppercase()
         if (normalized.length != 26 || !normalized.startsWith("IR")) return null
-        if (!normalized.drop(2).all(Char::isDigit)) return null
+        if (!normalized.drop(2).all { it in '0'..'9' }) return null
         return normalized
     }
 }

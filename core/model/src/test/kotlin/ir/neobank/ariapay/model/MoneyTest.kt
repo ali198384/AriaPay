@@ -34,6 +34,20 @@ class MoneyTest {
     }
 
     @Test
+    fun `addition rejects overflow instead of wrapping around`() {
+        assertThrows<ArithmeticException> {
+            Money.rials(Long.MAX_VALUE) + Money.rials(1L)
+        }
+    }
+
+    @Test
+    fun `toman conversion rejects overflow`() {
+        assertThrows<ArithmeticException> {
+            Money.tomans(Long.MAX_VALUE / 10L + 1L)
+        }
+    }
+
+    @Test
     fun `negative money is rejected`() {
         assertThrows<IllegalArgumentException> {
             Money.rials(-1)
