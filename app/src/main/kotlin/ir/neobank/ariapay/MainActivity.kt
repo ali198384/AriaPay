@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import dagger.hilt.android.AndroidEntryPoint
 import ir.neobank.ariapay.core.designsystem.theme.AriaTheme
-import ir.neobank.ariapay.feature.home.HomeRoute
+import ir.neobank.ariapay.feature.auth.MobileNumberRoute
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AriaTheme {
                 Surface {
-                    HomeRoute()
+                    MobileNumberRoute()
                 }
             }
         }

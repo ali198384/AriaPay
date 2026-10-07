@@ -7,4 +7,5 @@ sealed interface AuthError {
     data object WrongCode : AuthError
     data object Expired : AuthError
     data object Network : AuthError
+    data object Unknown : AuthError
 }

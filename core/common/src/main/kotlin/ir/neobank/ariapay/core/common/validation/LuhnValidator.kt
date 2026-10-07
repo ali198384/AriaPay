@@ -1,6 +1,6 @@
 package ir.neobank.ariapay.core.common.validation
 
-import ir.neobank.ariapay.core.common.util.IranianDigits
+import ir.neobank.ariapay.core.common.util.FinancialInputNormalizer
 
 object LuhnValidator {
     /**
@@ -8,10 +8,7 @@ object LuhnValidator {
      * طبق استاندارد بانکی شتاب، ضرب یک‌درمیان در ۲ انجام می‌شود.
     */
     fun isValid(cardNumber: String): Boolean {
-        val sanitized = IranianDigits.toEnglish(cardNumber)
-            .replace("-", "")
-            .replace(" ", "")
-            .trim()
+        val sanitized = FinancialInputNormalizer.normalizeCardNumber(cardNumber) ?: return false
 
         if (sanitized.length != 16 || !sanitized.all { it in '0'..'9' }) {
             return false

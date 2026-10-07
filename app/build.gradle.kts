@@ -36,6 +36,7 @@ android {
 
 dependencies {
     implementation(projects.feature.home)
+    implementation(projects.feature.auth)
     implementation(projects.core.data)
     implementation(projects.core.common)
     implementation(projects.core.model)

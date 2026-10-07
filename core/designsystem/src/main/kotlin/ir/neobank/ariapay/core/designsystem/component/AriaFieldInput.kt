@@ -1,5 +1,7 @@
 package ir.neobank.ariapay.core.designsystem.component
 
+import ir.neobank.ariapay.core.common.util.FinancialInputNormalizer
+
 
 enum class AriaFieldType {
     Text,
@@ -12,8 +14,7 @@ enum class AriaFieldType {
 internal fun sanitizeFieldInput(type: AriaFieldType, raw: String): String {
     if (type == AriaFieldType.Text) return raw
 
-    val latin = raw.map { it.toAsciiDigit() }.joinToString("")
-    val digits = latin.filter { it.isDigit() }
+    val digits = FinancialInputNormalizer.digitsOnly(raw)
 
     return when (type) {
         AriaFieldType.Text -> raw
@@ -27,12 +28,6 @@ internal fun sanitizeFieldInput(type: AriaFieldType, raw: String): String {
             }
         }
     }
-}
-
-internal fun Char.toAsciiDigit(): Char = when (this) {
-    in '۰'..'۹' -> '0' + (this - '۰')
-    in '٠'..'٩' -> '0' + (this - '٠')
-    else -> this
 }
 
 internal fun toPersianDigits(text: String): String = text.map { ch ->

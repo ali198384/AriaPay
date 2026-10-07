@@ -9,4 +9,6 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.window.core)
 }

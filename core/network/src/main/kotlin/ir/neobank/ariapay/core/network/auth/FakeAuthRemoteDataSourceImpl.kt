@@ -1,7 +1,7 @@
 package ir.neobank.ariapay.core.network.auth
 
 
-import ir.neobank.ariapay.core.common.util.IranianDigits
+import ir.neobank.ariapay.core.common.util.FinancialInputNormalizer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -16,7 +16,7 @@ class FakeAuthRemoteDataSourceImpl(
 
     override suspend fun requestOtp(mobile: String): AuthRemoteResponse {
         delay(REQUEST_DELAY_MILLIS.milliseconds)
-        val normalized = mobile.normalizedMobile()
+        val normalized = FinancialInputNormalizer.normalizeMobileNumber(mobile)
             ?: return AuthRemoteResponse(error = AuthRemoteError.InvalidMobile)
         pendingOtpMutex.withLock {
             val now = nowMillis()
@@ -28,9 +28,9 @@ class FakeAuthRemoteDataSourceImpl(
 
     override suspend fun verifyOtp(mobile: String, code: String): AuthRemoteResponse {
         delay(REQUEST_DELAY_MILLIS.milliseconds)
-        val normalizedMobile = mobile.normalizedMobile()
+        val normalizedMobile = FinancialInputNormalizer.normalizeMobileNumber(mobile)
             ?: return AuthRemoteResponse(error = AuthRemoteError.InvalidMobile)
-        val normalizedCode = code.normalizedOtp()
+        val normalizedCode = FinancialInputNormalizer.normalizeOtpCode(code)
             ?: return AuthRemoteResponse(error = AuthRemoteError.WrongCode)
         return pendingOtpMutex.withLock {
             val expiresAt = pendingUntilMillis[normalizedMobile]
@@ -49,18 +49,6 @@ class FakeAuthRemoteDataSourceImpl(
                 }
             }
         }
-    }
-
-    private fun String.normalizedMobile(): String? {
-        val normalized = IranianDigits.toEnglish(this)
-        if (normalized.any { it !in '0'..'9' && it != ' ' && it != '-' }) return null
-        return normalized.filter { it in '0'..'9' }
-            .takeIf { it.length == 11 && it.startsWith("09") }
-    }
-
-    private fun String.normalizedOtp(): String? {
-        val normalized = IranianDigits.toEnglish(this)
-        return normalized.takeIf { it.length == 6 && it.all { char -> char in '0'..'9' } }
     }
 
     private companion object {

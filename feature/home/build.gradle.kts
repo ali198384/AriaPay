@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "ir.neobank.ariapay.feature.home"
 }
+
+dependencies {
+    implementation(projects.core.designsystem)
+}

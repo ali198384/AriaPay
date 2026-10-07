@@ -56,15 +56,14 @@ private fun Project.configureKotlin() {
         }.apply {
             jvmTarget.set(JvmTarget.JVM_17)
             allWarningsAsErrors.set(warningsAsErrors)
-            freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
         }
     }
 }
 
 internal fun Project.configureJunit5() {
     dependencies {
-        add("testImplementation", libs.findLibrary("junit-jupiter-api").get())
         add("testRuntimeOnly", libs.findLibrary("junit-jupiter").get())
+        add("testImplementation", libs.findLibrary("junit-jupiter-api").get())
         add("testImplementation", libs.findLibrary("junit-jupiter-params").get())
         add("testImplementation", libs.findLibrary("junit-platform-launcher").get())
         add("testImplementation", libs.findLibrary("truth").get())
