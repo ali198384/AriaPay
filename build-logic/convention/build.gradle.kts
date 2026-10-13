@@ -46,10 +46,6 @@ gradlePlugin {
             id = "ir.neobank.ariapay.android.library.compose"
             implementationClass = "ir.neobank.ariapay.convention.AndroidLibraryComposeConventionPlugin"
         }
-        register("androidApplicationCompose") {
-            id = "ir.neobank.ariapay.android.application.compose"
-            implementationClass = "ir.neobank.ariapay.convention.AndroidApplicationComposeConventionPlugin"
-        }
         register("androidFeature") {
             id = "ir.neobank.ariapay.android.feature"
             implementationClass = "ir.neobank.ariapay.convention.AndroidFeatureConventionPlugin"

@@ -4,10 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import ir.neobank.ariapay.core.designsystem.theme.AriaTheme
-import ir.neobank.ariapay.feature.auth.MobileNumberRoute
+import ir.neobank.ariapay.navigation.AppNavHost
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -16,8 +18,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AriaTheme {
-                Surface {
-                    MobileNumberRoute()
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    AppNavHost(modifier = Modifier.fillMaxSize())
                 }
             }
         }

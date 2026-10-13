@@ -14,7 +14,7 @@ lifecycle = "2.11.0"
 coroutines = "1.11.0"
 navigationCompose = "2.10.0"
 hilt = "2.60.1"
-hiltNavigationCompose = "1.4.0"
+androidxHiltCompose = "1.4.0"
 javaxInject = "1"
 roomKtxVersion = "2.8.4"
 datastore = "1.2.1"
@@ -62,7 +62,7 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel-compose", version.ref = "androidxHiltCompose" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 
 #room
@@ -103,7 +103,6 @@ parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotli
 ariapay-android-application = { id = "ir.neobank.ariapay.android.application" }
 ariapay-android-library = { id = "ir.neobank.ariapay.android.library" }
 ariapay-android-library-compose = { id = "ir.neobank.ariapay.android.library.compose" }
-ariapay-android-application-compose = { id = "ir.neobank.ariapay.android.application.compose" }
 ariapay-android-feature = { id = "ir.neobank.ariapay.android.feature" }
 ariapay-hilt = { id = "ir.neobank.ariapay.hilt" }
 ariapay-jvm-library = { id = "ir.neobank.ariapay.jvm.library" }

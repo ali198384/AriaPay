@@ -1,7 +1,6 @@
-package ir.neobank.ariapay.feature.auth
+package ir.neobank.ariapay.feature.auth.contract
 
 import ir.neobank.ariapay.core.domain.auth.AuthError
-import ir.neobank.ariapay.feature.auth.contract.AuthUiState
 
 data class MobileNumberUiState(
     val mobileNumber: String,

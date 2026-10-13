@@ -14,12 +14,15 @@ import ir.neobank.ariapay.core.testing.MainDispatcherExtension
 import ir.neobank.ariapay.feature.auth.contract.AuthEffect
 import ir.neobank.ariapay.feature.auth.contract.AuthEvent
 import ir.neobank.ariapay.feature.auth.contract.AuthStep
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MainDispatcherExtension::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class AuthViewModelTest {
 
     @Test
@@ -157,7 +160,7 @@ class AuthViewModelTest {
         vm.onEvent(AuthEvent.OtpCodeChanged("۱۲۳۴۵۶"))
 
         vm.effect.test {
-            vm.onEvent(AuthEvent.VerifyClicked)
+            vm.onEvent(AuthEvent.OtpCodeCompleted("۱۲۳۴۵۶"))
             runCurrent()
 
             assertThat(awaitItem()).isEqualTo(AuthEffect.NavigateToHome)
@@ -192,9 +195,129 @@ class AuthViewModelTest {
             assertThat(state.otpCode).isEmpty()
             assertThat(state.isLoading).isFalse()
             assertThat(state.error).isNull()
-            assertThat(state.resendSecondsLeft).isEqualTo(0)
+            assertThat(vm.resendSecondsLeft.value).isEqualTo(30)
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `continuing with the same phone reuses otp and keeps countdown running`() = runTest {
+        val repo = FakeAuthRepository()
+        val vm = createVm(repo)
+        vm.onEvent(AuthEvent.MobileNumberChanged("09123456789"))
+        vm.onEvent(AuthEvent.ContinueClicked)
+        runCurrent()
+        advanceTimeBy(5_000)
+        runCurrent()
+        val secondsBeforeBack = vm.resendSecondsLeft.value
+
+        vm.onEvent(AuthEvent.BackFromOtp)
+        vm.onEvent(AuthEvent.ContinueClicked)
+        runCurrent()
+
+        assertThat(repo.requestCount).isEqualTo(1)
+        assertThat(vm.uiState.value.step).isEqualTo(AuthStep.OTP)
+        assertThat(vm.resendSecondsLeft.value).isEqualTo(secondsBeforeBack)
+    }
+
+    @Test
+    fun `changing phone resets old countdown and requests a new otp`() = runTest {
+        val repo = FakeAuthRepository()
+        val vm = createVm(repo)
+        vm.onEvent(AuthEvent.MobileNumberChanged("09123456789"))
+        vm.onEvent(AuthEvent.ContinueClicked)
+        runCurrent()
+
+        vm.onEvent(AuthEvent.BackFromOtp)
+        vm.onEvent(AuthEvent.MobileNumberChanged("09123456780"))
+        assertThat(vm.resendSecondsLeft.value).isEqualTo(0)
+        vm.onEvent(AuthEvent.ContinueClicked)
+        runCurrent()
+
+        assertThat(repo.requestCount).isEqualTo(2)
+        assertThat(repo.lastMobile).isEqualTo("09123456780")
+        assertThat(vm.resendSecondsLeft.value).isEqualTo(30)
+    }
+
+    @Test
+    fun `expired otp is cleared and disabled until resend succeeds`() = runTest {
+        val repo = FakeAuthRepository()
+        val vm = createVm(repo)
+
+        vm.otpUiState.test {
+            awaitItem()
+            vm.onEvent(AuthEvent.MobileNumberChanged("09123456789"))
+            vm.onEvent(AuthEvent.ContinueClicked)
+            runCurrent()
+            expectMostRecentItem()
+
+            vm.onEvent(AuthEvent.OtpCodeChanged("123456"))
+            advanceTimeBy(RESEND_TEST_TIMEOUT_MILLIS)
+            runCurrent()
+            val expiredState = expectMostRecentItem()
+            assertThat(expiredState.isOtpInputEnabled).isFalse()
+            assertThat(vm.uiState.value.otpCode).isEmpty()
+
+            vm.onEvent(AuthEvent.OtpCodeChanged("654321"))
+            assertThat(vm.uiState.value.otpCode).isEmpty()
+
+            vm.onEvent(AuthEvent.ResendCodeClicked)
+            runCurrent()
+            val resentState = expectMostRecentItem()
+            assertThat(repo.requestCount).isEqualTo(2)
+            assertThat(resentState.isOtpInputEnabled).isTrue()
+            assertThat(vm.resendSecondsLeft.value).isEqualTo(30)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `resend countdown ticks do not emit a new otp form state`() = runTest {
+        val vm = createVm()
+
+        vm.otpUiState.test {
+            assertThat(awaitItem().canVerify).isFalse()
+            vm.onEvent(AuthEvent.MobileNumberChanged("09123456789"))
+            vm.onEvent(AuthEvent.ContinueClicked)
+            runCurrent()
+
+            val otpState = expectMostRecentItem()
+            assertThat(otpState.infoMessage).isEqualTo("کد تأیید ارسال شد")
+
+            vm.resendSecondsLeft.test {
+                assertThat(awaitItem()).isEqualTo(30)
+                advanceTimeBy(1_000)
+                runCurrent()
+                assertThat(awaitItem()).isEqualTo(29)
+            }
+
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `resend is blocked during cooldown and clears old code when allowed`() = runTest {
+        val repo = FakeAuthRepository()
+        val vm = createVm(repo)
+        vm.onEvent(AuthEvent.MobileNumberChanged("09123456789"))
+        vm.onEvent(AuthEvent.ContinueClicked)
+        runCurrent()
+        vm.onEvent(AuthEvent.OtpCodeChanged("123456"))
+
+        vm.onEvent(AuthEvent.ResendCodeClicked)
+        runCurrent()
+        assertThat(repo.requestCount).isEqualTo(1)
+        assertThat(vm.uiState.value.otpCode).isEqualTo("123456")
+
+        advanceTimeBy(30_000)
+        runCurrent()
+        vm.onEvent(AuthEvent.ResendCodeClicked)
+        runCurrent()
+
+        assertThat(repo.requestCount).isEqualTo(2)
+        assertThat(vm.uiState.value.otpCode).isEmpty()
+        assertThat(vm.resendSecondsLeft.value).isEqualTo(30)
     }
 
     private fun createVm(
@@ -203,6 +326,10 @@ class AuthViewModelTest {
         requestOtpUseCase = RequestOtpUseCase(repo),
         verifyOtpUseCase = VerifyOtpUseCase(repo),
     )
+
+    private companion object {
+        const val RESEND_TEST_TIMEOUT_MILLIS = 30_000L
+    }
 
     private class FakeAuthRepository(
         private val requestResult: () -> AuthResult<Unit> = {

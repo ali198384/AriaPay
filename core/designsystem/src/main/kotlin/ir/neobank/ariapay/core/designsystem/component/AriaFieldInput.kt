@@ -30,7 +30,8 @@ internal fun sanitizeFieldInput(type: AriaFieldType, raw: String): String {
     }
 }
 
-internal fun toPersianDigits(text: String): String = text.map { ch ->
+/** Formats ASCII digits for display; normalization continues to use FinancialInputNormalizer. */
+fun toPersianDigits(text: String): String = text.map { ch ->
     if (ch in '0'..'9') '۰' + (ch - '0') else ch
 }.joinToString("")
 

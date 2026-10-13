@@ -5,10 +5,12 @@ import ir.neobank.ariapay.core.domain.auth.AuthError
 data class AuthUiState(
     val mobileNumber: String = "",
     val otpCode: String = "",
+    val isOtpInputEnabled: Boolean = false,
     val step: AuthStep = AuthStep.MOBILE_NUMBER,
-    val isLoading: Boolean = false,
+    val operation: AuthOperation = AuthOperation.NONE,
     val error: AuthError? = null,
     val infoMessage: String? = null,
-    /** ثانیه‌شمار ارسال مجدد؛ 0 = فعال */
-    val resendSecondsLeft: Int = 0
-)
+) {
+    val isLoading: Boolean
+        get() = operation != AuthOperation.NONE
+}

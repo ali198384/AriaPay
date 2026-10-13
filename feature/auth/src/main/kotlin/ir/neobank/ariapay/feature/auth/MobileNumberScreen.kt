@@ -31,8 +31,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,24 +47,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.neobank.ariapay.core.designsystem.adaptive.WindowWidthClass
+import ir.neobank.ariapay.core.designsystem.adaptive.rememberWindowWidthClass
 import ir.neobank.ariapay.core.designsystem.component.AriaButton
 import ir.neobank.ariapay.core.designsystem.component.AriaFieldType
 import ir.neobank.ariapay.core.designsystem.component.AriaTextField
-import ir.neobank.ariapay.core.designsystem.adaptive.WindowWidthClass
-import ir.neobank.ariapay.core.designsystem.adaptive.rememberWindowWidthClass
 import ir.neobank.ariapay.core.designsystem.theme.AriaTheme
+import ir.neobank.ariapay.feature.auth.contract.AuthEffect
 import ir.neobank.ariapay.feature.auth.contract.AuthEvent
 
 @Composable
-fun MobileNumberRoute(viewModel: AuthViewModel = hiltViewModel()) {
+fun MobileNumberRoute(
+    onNavigateToOtp: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
+) {
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            if (effect == AuthEffect.NavigateToOtp) onNavigateToOtp()
+        }
+    }
+
+
     val widthClass = rememberWindowWidthClass()
+
     val state by viewModel.mobileNumberUiState.collectAsStateWithLifecycle()
-    val onMobileNumberChange: (String) -> Unit = remember(viewModel) {
-        { value -> viewModel.onEvent(AuthEvent.MobileNumberChanged(value)) }
+
+    val onMobileNumberChange: (String) -> Unit = { value ->
+        viewModel.onEvent(AuthEvent.MobileNumberChanged(value))
     }
-    val onContinue: () -> Unit = remember(viewModel) {
-        { viewModel.onEvent(AuthEvent.ContinueClicked) }
+
+    val onContinue: () -> Unit = {
+        viewModel.onEvent(AuthEvent.ContinueClicked)
     }
+
 
     MobileNumberScreen(
         mobileNumber = state.mobileNumber,
@@ -98,7 +115,11 @@ fun MobileNumberScreen(
                     .verticalScroll(rememberScrollState())
                     .imePadding(),
             ) {
-                WelcomeHeader()
+                WelcomeHeader(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(282.dp)
+                )
                 MobileNumberForm(
                     mobileNumber = mobileNumber,
                     isLoading = isLoading,
@@ -277,9 +298,7 @@ private fun MobileNumberForm(
 
 @Composable
 private fun WelcomeHeader(
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
-        .height(282.dp),
+    modifier: Modifier,
     isExpanded: Boolean = false,
 ) {
     val primary = MaterialTheme.colorScheme.primary
