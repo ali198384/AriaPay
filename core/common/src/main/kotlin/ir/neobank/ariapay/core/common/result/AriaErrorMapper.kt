@@ -1,5 +1,9 @@
 package ir.neobank.ariapay.core.common.result
 
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+
 
 object AriaErrorMapper {
 
@@ -25,10 +29,10 @@ object AriaErrorMapper {
 
     fun fromThrowable(throwable: Throwable): AriaException = when (throwable) {
         is AriaException -> throwable
-        is java.net.UnknownHostException,
-        is java.net.ConnectException,
+        is UnknownHostException,
+        is ConnectException,
             -> AriaException.NoInternet(throwable)
-        is java.net.SocketTimeoutException -> AriaException.Timeout(throwable)
+        is SocketTimeoutException -> AriaException.Timeout(throwable)
         else -> AriaException.Unknown(cause = throwable)
     }
 }

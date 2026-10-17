@@ -10,7 +10,6 @@ import ir.neobank.ariapay.core.domain.auth.OtpCode
 import ir.neobank.ariapay.core.network.auth.AuthRemoteDataSource
 import ir.neobank.ariapay.core.network.auth.AuthRemoteError
 import java.io.IOException
-import javax.inject.Inject
 
 class AuthRepositoryImpl (
     private val remote: AuthRemoteDataSource,

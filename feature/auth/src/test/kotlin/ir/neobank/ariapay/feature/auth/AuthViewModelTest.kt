@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.time.Duration.Companion.milliseconds
 
 @ExtendWith(MainDispatcherExtension::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -207,7 +208,7 @@ class AuthViewModelTest {
         vm.onEvent(AuthEvent.MobileNumberChanged("09123456789"))
         vm.onEvent(AuthEvent.ContinueClicked)
         runCurrent()
-        advanceTimeBy(5_000)
+        advanceTimeBy(5_000.milliseconds)
         runCurrent()
         val secondsBeforeBack = vm.resendSecondsLeft.value
 
@@ -252,7 +253,7 @@ class AuthViewModelTest {
             expectMostRecentItem()
 
             vm.onEvent(AuthEvent.OtpCodeChanged("123456"))
-            advanceTimeBy(RESEND_TEST_TIMEOUT_MILLIS)
+            advanceTimeBy(RESEND_TEST_TIMEOUT_MILLIS.milliseconds)
             runCurrent()
             val expiredState = expectMostRecentItem()
             assertThat(expiredState.isOtpInputEnabled).isFalse()
@@ -286,7 +287,7 @@ class AuthViewModelTest {
 
             vm.resendSecondsLeft.test {
                 assertThat(awaitItem()).isEqualTo(30)
-                advanceTimeBy(1_000)
+                advanceTimeBy(1_000.milliseconds)
                 runCurrent()
                 assertThat(awaitItem()).isEqualTo(29)
             }
@@ -310,7 +311,7 @@ class AuthViewModelTest {
         assertThat(repo.requestCount).isEqualTo(1)
         assertThat(vm.uiState.value.otpCode).isEqualTo("123456")
 
-        advanceTimeBy(30_000)
+        advanceTimeBy(30_000.milliseconds)
         runCurrent()
         vm.onEvent(AuthEvent.ResendCodeClicked)
         runCurrent()
@@ -321,10 +322,10 @@ class AuthViewModelTest {
     }
 
     private fun createVm(
-        repo: FakeAuthRepository = FakeAuthRepository(),
+        repo: FakeAuthRepository = FakeAuthRepository()
     ) = AuthViewModel(
         requestOtpUseCase = RequestOtpUseCase(repo),
-        verifyOtpUseCase = VerifyOtpUseCase(repo),
+        verifyOtpUseCase = VerifyOtpUseCase(repo)
     )
 
     private companion object {

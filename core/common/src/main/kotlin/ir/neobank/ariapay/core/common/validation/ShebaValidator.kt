@@ -1,6 +1,7 @@
 package ir.neobank.ariapay.core.common.validation
 
 import ir.neobank.ariapay.core.common.util.FinancialInputNormalizer
+import kotlin.text.iterator
 
 object IranShebaValidator {
 

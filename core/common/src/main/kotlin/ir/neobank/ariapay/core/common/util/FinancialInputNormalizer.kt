@@ -1,5 +1,7 @@
 package ir.neobank.ariapay.core.common.util
 
+import kotlin.text.iterator
+
 /** Shared canonicalization for Persian financial inputs. Validation algorithms stay in validators. */
 object FinancialInputNormalizer {
 

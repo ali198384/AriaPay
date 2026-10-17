@@ -1,5 +1,6 @@
 package ir.neobank.ariapay.feature.auth
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -224,7 +224,7 @@ private fun MobileNumberForm(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-            border = androidx.compose.foundation.BorderStroke(
+            border = BorderStroke(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
             )
