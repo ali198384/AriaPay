@@ -102,7 +102,7 @@ class SessionManagerTest {
         var currentTimeMillis = 0L
         val sessionManager = createSessionManager(
             scope = backgroundScope,
-            nowMillis = { currentTimeMillis },
+            nowMillis = { currentTimeMillis }
         )
         sessionManager.startSession()
 
@@ -137,7 +137,7 @@ class SessionManagerTest {
         assertThrows<IllegalArgumentException> {
             createSessionManager(
                 scope = backgroundScope,
-                inactivityTimeoutMillis = 0,
+                inactivityTimeoutMillis = 0
             )
         }
     }
