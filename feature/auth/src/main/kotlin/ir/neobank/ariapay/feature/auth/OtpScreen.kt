@@ -395,7 +395,7 @@ private fun VerificationMark() {
 
 @Composable
 private fun OtpRecipient(mobileNumber: String, enabled: Boolean, onEditNumber: () -> Unit) {
-    val displayedNumber = remember(mobileNumber) { toPersianDigits(mobileNumber) }
+    val displayedNumber = remember(mobileNumber) { mobileNumber.toPersianDigits() }
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
@@ -472,7 +472,7 @@ private fun OtpResendContent(
 ) {
     val timerText = remember(secondsLeft) {
         val safeSeconds = secondsLeft.coerceAtLeast(0)
-        toPersianDigits("${safeSeconds / 60}:${(safeSeconds % 60).toString().padStart(2, '0')}")
+        "${safeSeconds / 60}:${(safeSeconds % 60).toString().padStart(2, '0')}".toPersianDigits()
     }
     Column(
         modifier = Modifier.fillMaxWidth(),

@@ -118,7 +118,7 @@ internal class AmountVisualTransformation : VisualTransformation {
         val raw = text.text
         if (raw.isEmpty()) return TransformedText(AnnotatedString(""), OffsetMapping.Identity)
 
-        val formatted = toPersianDigits(groupThousands(raw))
+        val formatted = groupThousands(raw).toPersianDigits()
         val mapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 val clamped = offset.coerceIn(0, raw.length)
