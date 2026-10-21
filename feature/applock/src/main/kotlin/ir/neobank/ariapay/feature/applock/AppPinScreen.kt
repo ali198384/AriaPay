@@ -3,6 +3,8 @@ package ir.neobank.ariapay.feature.applock
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backspace
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,7 +42,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -80,11 +86,42 @@ fun AppPinRoute(
 ) {
     SecureWindowEffect()
 
+    val context = LocalContext.current
+    val activity = context.findFragmentActivity()
+    var canAuthenticateBiometrically by remember(activity) {
+        mutableStateOf(activity.canAuthenticateStrong())
+    }
+    val biometricPrompt = remember(activity, viewModel) {
+        activity?.let { host ->
+            BiometricPrompt(
+                host,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(
+                        result: BiometricPrompt.AuthenticationResult,
+                    ) {
+                        viewModel.onEvent(AppPinEvent.BiometricAuthenticated)
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        if (errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON &&
+                            errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
+                            errorCode != BiometricPrompt.ERROR_CANCELED
+                        ) {
+                            viewModel.onEvent(AppPinEvent.BiometricPromptFailed)
+                        }
+                    }
+                },
+            )
+        }
+    }
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner, viewModel) {
+    DisposableEffect(lifecycleOwner, viewModel, activity) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_START -> viewModel.onEvent(AppPinEvent.ScreenStarted)
+                Lifecycle.Event.ON_START -> {
+                    viewModel.onEvent(AppPinEvent.ScreenStarted)
+                    canAuthenticateBiometrically = activity.canAuthenticateStrong()
+                }
                 Lifecycle.Event.ON_STOP -> viewModel.onEvent(AppPinEvent.ScreenStopped)
                 else -> Unit
             }
@@ -105,6 +142,10 @@ fun AppPinRoute(
         onDigitPressed = { digit -> viewModel.onEvent(AppPinEvent.DigitPressed(digit)) },
         onDeletePressed = { viewModel.onEvent(AppPinEvent.DeletePressed) },
         onRetry = { viewModel.onEvent(AppPinEvent.RetryInitialization) },
+        isBiometricAvailable = canAuthenticateBiometrically && biometricPrompt != null,
+        onBiometricPressed = {
+            biometricPrompt?.authenticate(createBiometricPromptInfo())
+        },
         widthClass = rememberWindowWidthClass(),
     )
 }
@@ -116,11 +157,12 @@ fun AppPinScreen(
     onDigitPressed: (Char) -> Unit,
     onDeletePressed: () -> Unit,
     onRetry: () -> Unit,
+    isBiometricAvailable: Boolean = false,
+    onBiometricPressed: () -> Unit = {},
     widthClass: WindowWidthClass = WindowWidthClass.COMPACT,
-    modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
@@ -160,6 +202,8 @@ fun AppPinScreen(
                     state = state,
                     onDigitPressed = onDigitPressed,
                     onDeletePressed = onDeletePressed,
+                    isBiometricAvailable = isBiometricAvailable,
+                    onBiometricPressed = onBiometricPressed,
                     isShortScreen = isShortScreen,
                 )
             }
@@ -172,6 +216,8 @@ private fun PinEntryContent(
     state: AppPinUiState,
     onDigitPressed: (Char) -> Unit,
     onDeletePressed: () -> Unit,
+    isBiometricAvailable: Boolean,
+    onBiometricPressed: () -> Unit,
     isShortScreen: Boolean,
 ) {
     PinHeader(mode = state.mode)
@@ -215,7 +261,9 @@ private fun PinEntryContent(
 
     PinKeypad(
         enabled = !state.isLoading,
-        enteredDigitCount = state.enteredDigitCount,
+        canDelete = state.enteredDigitCount > 0,
+        showBiometricKey = state.mode == AppPinMode.UNLOCK && isBiometricAvailable,
+        onBiometricPressed = onBiometricPressed,
         onDigitPressed = onDigitPressed,
         onDeletePressed = onDeletePressed,
     )
@@ -325,7 +373,9 @@ private fun PinDots(
 @Composable
 private fun PinKeypad(
     enabled: Boolean,
-    enteredDigitCount: Int,
+    canDelete: Boolean,
+    showBiometricKey: Boolean,
+    onBiometricPressed: () -> Unit,
     onDigitPressed: (Char) -> Unit,
     onDeletePressed: () -> Unit,
 ) {
@@ -349,11 +399,18 @@ private fun PinKeypad(
                 ) {
                     row.forEach { key ->
                         if (key == null) {
-                            Spacer(Modifier.size(width = 76.dp, height = 64.dp))
+                            if (showBiometricKey) {
+                                BiometricKeyButton(
+                                    enabled = enabled,
+                                    onClick = onBiometricPressed,
+                                )
+                            } else {
+                                Spacer(Modifier.size(width = 76.dp, height = 64.dp))
+                            }
                         } else {
                             PinKeyButton(
                                 key = key,
-                                enabled = enabled && (key !is PinKey.Delete || enteredDigitCount > 0),
+                                enabled = enabled && (key !is PinKey.Delete || canDelete),
                                 onDigitPressed = onDigitPressed,
                                 onDeletePressed = onDeletePressed,
                             )
@@ -362,6 +419,34 @@ private fun PinKeypad(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun BiometricKeyButton(
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    FilledTonalButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier
+            .size(width = 76.dp, height = 64.dp)
+            .semantics {
+                contentDescription = "ورود با اثر انگشت یا تشخیص چهره"
+                role = Role.Button
+            },
+        shape = RoundedCornerShape(22.dp),
+        contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Fingerprint,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+        )
     }
 }
 
@@ -489,6 +574,7 @@ private fun AppPinError.toPersianMessage(): String = when (this) {
     AppPinError.INCORRECT -> "رمز واردشده درست نیست. دوباره تلاش کنید."
     AppPinError.MISMATCH -> "دو رمز یکسان نبودند؛ رمز تازه‌ای انتخاب کنید."
     AppPinError.SESSION_UNAVAILABLE -> "نشست قابل بازشدن نیست. دوباره تلاش کنید."
+    AppPinError.BIOMETRIC_FAILED -> "تأیید بیومتریک انجام نشد؛ با رمز برنامه وارد شوید."
     AppPinError.STORAGE -> "دسترسی امن به رمز ممکن نشد. دوباره تلاش کنید."
 }
 
@@ -498,10 +584,31 @@ private fun Context.findActivity(): Activity? = when (this) {
     else -> null
 }
 
+private fun Context.findFragmentActivity(): FragmentActivity? = when (this) {
+    is FragmentActivity -> this
+    is ContextWrapper -> baseContext.findFragmentActivity()
+    else -> null
+}
+
+private fun FragmentActivity?.canAuthenticateStrong(): Boolean =
+    this?.let { activity ->
+        BiometricManager.from(activity)
+            .canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) ==
+            BiometricManager.BIOMETRIC_SUCCESS
+    } == true
+
+private fun createBiometricPromptInfo(): BiometricPrompt.PromptInfo =
+    BiometricPrompt.PromptInfo.Builder()
+        .setTitle("ورود امن به آریاپی")
+        .setSubtitle("اثر انگشت یا تشخیص چهره را تأیید کنید")
+        .setNegativeButtonText("استفاده از رمز برنامه")
+        .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+        .build()
+
 @Composable
 private fun SecureWindowEffect() {
     val context = LocalContext.current
-    val window = remember(context) { context.findActivity()?.window }
+    val window = context.findActivity()?.window
 
     DisposableEffect(window) {
         if (window == null) {

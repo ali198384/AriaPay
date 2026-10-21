@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.fragment)
     implementation(projects.feature.home)
     implementation(projects.feature.auth)
     implementation(projects.feature.applock)

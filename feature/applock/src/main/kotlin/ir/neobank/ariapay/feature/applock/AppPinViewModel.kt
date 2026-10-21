@@ -54,6 +54,8 @@ class AppPinViewModel @Inject constructor(
             AppPinEvent.RetryInitialization -> loadPinMode()
             AppPinEvent.ScreenStarted -> loadPinMode()
             AppPinEvent.ScreenStopped -> onScreenStopped()
+            AppPinEvent.BiometricAuthenticated -> onBiometricAuthenticated()
+            AppPinEvent.BiometricPromptFailed -> onBiometricPromptFailed()
         }
     }
 
@@ -194,30 +196,47 @@ class AppPinViewModel @Inject constructor(
                     return@launch
                 }
 
-                val sessionCanContinue = when (sessionManager.state.value) {
-                    AppSessionState.SignedOut -> false
-                    AppSessionState.Unlocked -> {
-                        sessionManager.onUserActivity()
-                        true
-                    }
-
-                    is AppSessionState.Locked -> sessionManager.unlockAfterAuthentication()
-                }
-                if (!sessionCanContinue) {
-                    showPinError(AppPinError.SESSION_UNAVAILABLE)
-                    return@launch
-                }
-
-                _uiState.update {
-                    it.copy(enteredDigitCount = 0, isLoading = false, error = null)
-                }
-                _effect.tryEmit(AppPinEffect.PinAccepted)
+                acceptAuthenticatedSession()
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (_: Exception) {
                 showPinError(AppPinError.STORAGE)
             }
         }
+    }
+
+    private fun onBiometricAuthenticated() {
+        if (_uiState.value.mode != AppPinMode.UNLOCK || _uiState.value.isLoading) return
+
+        clearEnteredPin()
+        acceptAuthenticatedSession()
+    }
+
+    private fun onBiometricPromptFailed() {
+        if (_uiState.value.mode != AppPinMode.UNLOCK || _uiState.value.isLoading) return
+
+        showPinError(AppPinError.BIOMETRIC_FAILED)
+    }
+
+    private fun acceptAuthenticatedSession() {
+        val sessionCanContinue = when (sessionManager.state.value) {
+            AppSessionState.SignedOut -> false
+            AppSessionState.Unlocked -> {
+                sessionManager.onUserActivity()
+                true
+            }
+
+            is AppSessionState.Locked -> sessionManager.unlockAfterAuthentication()
+        }
+        if (!sessionCanContinue) {
+            showPinError(AppPinError.SESSION_UNAVAILABLE)
+            return
+        }
+
+        _uiState.update {
+            it.copy(enteredDigitCount = 0, isLoading = false, error = null)
+        }
+        _effect.tryEmit(AppPinEffect.PinAccepted)
     }
 
     private fun showPinError(error: AppPinError) {

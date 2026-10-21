@@ -16,6 +16,7 @@ enum class AppPinError {
     INCORRECT,
     MISMATCH,
     SESSION_UNAVAILABLE,
+    BIOMETRIC_FAILED,
     STORAGE,
 }
 
@@ -33,6 +34,8 @@ sealed interface AppPinEvent {
     data object RetryInitialization : AppPinEvent
     data object ScreenStarted : AppPinEvent
     data object ScreenStopped : AppPinEvent
+    data object BiometricAuthenticated : AppPinEvent
+    data object BiometricPromptFailed : AppPinEvent
 }
 
 sealed interface AppPinEffect {
