@@ -10,21 +10,17 @@ import ir.neobank.ariapay.feature.auth.MobileNumberRoute
 
 fun NavGraphBuilder.mobileNumberNavHost(navController: NavController) {
     composable(AppRoute.MobileNumber.route) { backStackEntry ->
-        val authGraphEntry = remember(backStackEntry, navController) {
+        val authGraphEntry = remember(backStackEntry) {
             navController.getBackStackEntry(AppRoute.AuthGraph.route)
         }
         val authViewModel: AuthViewModel = hiltViewModel(authGraphEntry)
-        val navigateToOtp: () -> Unit = remember(navController) {
-            {
+        MobileNumberRoute(
+            viewModel = authViewModel,
+            onNavigateToOtp = {
                 navController.navigate(AppRoute.Otp.route) {
                     launchSingleTop = true
                 }
             }
-        }
-
-        MobileNumberRoute(
-            viewModel = authViewModel,
-            onNavigateToOtp = navigateToOtp,
         )
     }
 }

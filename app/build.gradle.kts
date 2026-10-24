@@ -40,12 +40,15 @@ dependencies {
     implementation(projects.feature.applock)
     implementation(projects.core.data)
     implementation(projects.core.common)
+    implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.designsystem)
     implementation(projects.core.datastore)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
 }

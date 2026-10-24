@@ -5,33 +5,31 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import ir.neobank.ariapay.core.domain.session.SessionManager
 import ir.neobank.ariapay.feature.auth.AuthViewModel
 import ir.neobank.ariapay.feature.auth.OtpRoute
 
-fun NavGraphBuilder.otpNavHost(navController: NavController) {
+fun NavGraphBuilder.otpNavHost(
+    navController: NavController,
+    sessionManager: SessionManager,
+) {
     composable(AppRoute.Otp.route) { backStackEntry ->
-        val authGraphEntry = remember(backStackEntry, navController) {
+        val authGraphEntry = remember(backStackEntry) {
             navController.getBackStackEntry(AppRoute.AuthGraph.route)
         }
         val authViewModel: AuthViewModel = hiltViewModel(authGraphEntry)
-        val navigateBack: () -> Unit = remember(navController) {
-            { navController.popBackStack() }
-        }
-        val navigateToHome: () -> Unit = remember(navController) {
-            {
-                navController.navigate(AppRoute.Home.route) {
+        OtpRoute(
+            viewModel = authViewModel,
+            onBack = { navController.popBackStack() },
+            onNavigateToHome = {
+                sessionManager.startSession()
+                navController.navigate(AppRoute.AppPin.route) {
                     popUpTo(AppRoute.AuthGraph.route) {
                         inclusive = true
                     }
                     launchSingleTop = true
                 }
             }
-        }
-
-        OtpRoute(
-            viewModel = authViewModel,
-            onBack = navigateBack,
-            onNavigateToHome = navigateToHome,
         )
     }
 }
