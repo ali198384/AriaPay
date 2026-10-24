@@ -1,16 +1,15 @@
 package ir.neobank.ariapay.core.database
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
-import ir.neobank.ariapay.core.database.internal.SchemaAnchor
+import ir.neobank.ariapay.core.database.profile.UserProfileDao
+import ir.neobank.ariapay.core.database.profile.UserProfileEntity
 
 @Database(
-    entities = [SchemaAnchor::class],
+    entities = [UserProfileEntity::class],
     version = 1,
 )
 abstract class AriaDatabase : RoomDatabase() {
-
+    abstract fun userProfileDao(): UserProfileDao
 }
 
