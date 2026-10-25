@@ -8,7 +8,13 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.network)
     implementation(projects.core.domain)
+
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.room.runtime)
+    androidTestImplementation(libs.truth)
 }

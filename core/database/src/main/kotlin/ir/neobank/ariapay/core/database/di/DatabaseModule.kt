@@ -9,6 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ir.neobank.ariapay.core.database.AriaDatabase
+import ir.neobank.ariapay.core.database.profile.UserProfileDao
 import javax.inject.Singleton
 
 @Module
@@ -26,4 +27,9 @@ internal object DatabaseModule {
         AriaDatabase::class.java,
         DATABASE_NAME,
     ).build()
+
+    @Provides
+    @Singleton
+    fun provideUserProfileDao(database: AriaDatabase): UserProfileDao =
+        database.userProfileDao()
 }

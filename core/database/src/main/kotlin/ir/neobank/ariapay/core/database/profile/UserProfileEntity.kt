@@ -21,8 +21,8 @@ data class UserProfileEntity(
     val nationalCodeMasked: String?,
     @ColumnInfo(name = "email")
     val email: String?,
-    @ColumnInfo(name = "avatar_url")
-    val avatarUrl: String?,
+    @ColumnInfo(name = "profile_photo_path")
+    val profilePhotoPath: String?,
     @ColumnInfo(name = "kyc_level")
     val kycLevel: String,
     @ColumnInfo(name = "kyc_status")

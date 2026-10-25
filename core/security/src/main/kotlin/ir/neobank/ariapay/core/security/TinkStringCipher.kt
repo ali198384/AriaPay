@@ -91,12 +91,15 @@ class TinkStringCipher(
                 RegistryConfiguration.get(),
             )
         } else {
-            KeysetHandle.generateNew(PredefinedAeadParameters.AES256_GCM).also { handle ->
+            KeysetHandle.generateNew(
+                PredefinedAeadParameters.AES256_GCM,
+                RegistryConfiguration.get()
+            ).also { handle ->
                 val encryptedKeyset = TinkProtoKeysetFormat.serializeEncryptedKeyset(
                     handle,
                     masterAead,
                     KEYSET_ASSOCIATED_DATA,
-                    RegistryConfiguration.get(),
+                    RegistryConfiguration.get()
                 )
                 writeKeyset(encryptedKeyset)
             }
