@@ -11,23 +11,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ir.neobank.ariapay.core.datastore.AppPinDataSource
-import ir.neobank.ariapay.core.datastore.AppPinDataSourceImpl
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSource
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSourceImpl
 import ir.neobank.ariapay.core.security.SecureValueCipher
-import ir.neobank.ariapay.core.security.TinkStringCipher
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal object DataStoreModule {
-
-    @Provides
-    @Singleton
-    fun provideSecureValueCipher(
-        @ApplicationContext context: Context,
-    ): SecureValueCipher = TinkStringCipher(context)
 
     @Provides
     @Singleton
@@ -44,10 +35,4 @@ internal object DataStoreModule {
         cipher: SecureValueCipher,
     ): AriaPreferencesDataSource = AriaPreferencesDataSourceImpl(dataStore, cipher)
 
-    @Provides
-    @Singleton
-    fun provideAppPinDataSource(
-        dataStore: DataStore<Preferences>,
-        cipher: SecureValueCipher,
-    ): AppPinDataSource = AppPinDataSourceImpl(dataStore, cipher)
 }

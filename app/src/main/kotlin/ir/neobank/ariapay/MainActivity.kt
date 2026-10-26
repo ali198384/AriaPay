@@ -8,7 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
-import ir.neobank.ariapay.core.domain.session.SessionManager
+import ir.neobank.ariapay.core.session.SessionManager
 import ir.neobank.ariapay.core.designsystem.theme.AriaTheme
 import ir.neobank.ariapay.navigation.AppNavHost
 import javax.inject.Inject

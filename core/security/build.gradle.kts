@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.ariapay.android.library)
+    alias(libs.plugins.ariapay.hilt)
 }
 
 android {

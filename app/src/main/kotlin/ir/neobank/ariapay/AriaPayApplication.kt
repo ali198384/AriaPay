@@ -5,7 +5,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import dagger.hilt.android.HiltAndroidApp
-import ir.neobank.ariapay.core.domain.session.SessionManager
+import ir.neobank.ariapay.core.session.SessionManager
 import javax.inject.Inject
 
 @HiltAndroidApp

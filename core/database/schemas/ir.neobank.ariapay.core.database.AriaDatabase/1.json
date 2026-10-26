@@ -1,0 +1,79 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "84e3f22fdbb7a79414be12a0b7d82442",
+    "entities": [
+      {
+        "tableName": "user_profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `full_name` TEXT, `mobile_number_masked` TEXT, `national_code_masked` TEXT, `email` TEXT, `profile_photo_path` TEXT, `kyc_level` TEXT NOT NULL, `kyc_status` TEXT NOT NULL, `account_status` TEXT NOT NULL, `server_updated_at_epoch_millis` INTEGER, PRIMARY KEY(`user_id`))",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fullName",
+            "columnName": "full_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "mobileNumberMasked",
+            "columnName": "mobile_number_masked",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "nationalCodeMasked",
+            "columnName": "national_code_masked",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "profilePhotoPath",
+            "columnName": "profile_photo_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kycLevel",
+            "columnName": "kyc_level",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kycStatus",
+            "columnName": "kyc_status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accountStatus",
+            "columnName": "account_status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverUpdatedAtEpochMillis",
+            "columnName": "server_updated_at_epoch_millis",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "user_id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '84e3f22fdbb7a79414be12a0b7d82442')"
+    ]
+  }
+}

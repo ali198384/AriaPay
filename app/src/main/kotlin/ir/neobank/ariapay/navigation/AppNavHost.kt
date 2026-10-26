@@ -11,8 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import ir.neobank.ariapay.core.domain.session.AppSessionState
-import ir.neobank.ariapay.core.domain.session.SessionManager
+import ir.neobank.ariapay.core.session.AppSessionState
+import ir.neobank.ariapay.core.session.SessionManager
 
 @Composable
 fun AppNavHost(

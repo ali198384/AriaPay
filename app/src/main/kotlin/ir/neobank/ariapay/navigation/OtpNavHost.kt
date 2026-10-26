@@ -5,7 +5,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import ir.neobank.ariapay.core.domain.session.SessionManager
+import ir.neobank.ariapay.core.session.SessionManager
 import ir.neobank.ariapay.feature.auth.AuthViewModel
 import ir.neobank.ariapay.feature.auth.OtpRoute
 

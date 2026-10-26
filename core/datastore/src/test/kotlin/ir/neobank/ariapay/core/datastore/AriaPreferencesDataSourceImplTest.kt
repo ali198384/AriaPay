@@ -20,7 +20,6 @@ class AriaPreferencesDataSourceImplTest {
 
     private data class Fixture(
         val source: AriaPreferencesDataSource,
-        val pinSource: AppPinDataSource,
         val dataStore: DataStore<Preferences>,
     )
 
@@ -30,7 +29,6 @@ class AriaPreferencesDataSourceImplTest {
         val dataStore = PreferenceDataStoreFactory.create(produceFile = { file })
         return Fixture(
             source = AriaPreferencesDataSourceImpl(dataStore, TestSecureValueCipher),
-            pinSource = AppPinDataSourceImpl(dataStore, TestSecureValueCipher),
             dataStore = dataStore,
         )
     }
@@ -90,14 +88,11 @@ class AriaPreferencesDataSourceImplTest {
             setLoggedIn(true)
             setAccessToken("GAPGPTMASKTOKENp00mx0yslfpX0X")
         }
-        fixture.pinSource.savePin("123456")
 
         source.clearSession()
 
         assertThat(source.isLoggedIn.first()).isFalse()
         assertThat(source.accessToken.first()).isNull()
-        assertThat(fixture.pinSource.hasPin.first()).isTrue()
-        assertThat(fixture.pinSource.verifyPin("123456")).isTrue()
     }
 
     @Test
@@ -123,22 +118,6 @@ class AriaPreferencesDataSourceImplTest {
         assertThat(fixture.source.accessToken.first()).isEqualTo(token)
     }
 
-    @Test
-    fun `پین با کاربرد جدا ذخیره می‌شود و قابل بررسی است`() = runTest {
-        val fixture = fixture()
-
-        fixture.pinSource.savePin("123456")
-
-        val storedValue = fixture.dataStore.data
-            .first()[AriaPreferenceKeys.encryptedAppPin]
-        assertThat(storedValue).isEqualTo("test:APP_PIN:123456")
-        assertThat(fixture.pinSource.hasPin.first()).isTrue()
-        assertThat(fixture.pinSource.verifyPin("123456")).isTrue()
-        assertThat(fixture.pinSource.verifyPin("654321")).isFalse()
-
-        fixture.pinSource.clearPin()
-        assertThat(fixture.pinSource.hasPin.first()).isFalse()
-    }
 }
 
 /** A deterministic stand-in for storage tests; it does not implement real cryptography. */
