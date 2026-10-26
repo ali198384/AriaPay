@@ -164,7 +164,7 @@ class AuthViewModelTest {
             vm.onEvent(AuthEvent.OtpCodeCompleted("۱۲۳۴۵۶"))
             runCurrent()
 
-            assertThat(awaitItem()).isEqualTo(AuthEffect.NavigateToHome)
+            assertThat(awaitItem()).isEqualTo(AuthEffect.NavigateToHome("demo-user"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -337,7 +337,7 @@ class AuthViewModelTest {
             AuthResult.Success(Unit)
         },
         private val verifyResult: () -> AuthResult<AuthSession> = {
-            AuthResult.Success(AuthSession("demo-access-token"))
+            AuthResult.Success(AuthSession("demo-access-token", "demo-user"))
         }
     ) : AuthRepository {
         var requestCount = 0

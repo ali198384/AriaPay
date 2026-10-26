@@ -19,7 +19,7 @@ class FakeAuthRemoteDataSourceImplTest {
 
     @Test
     fun `remote session string does not expose its access token`() {
-        val session = AuthRemoteSession("remote-secret-token")
+        val session = AuthRemoteSession("remote-secret-token", "demo-user")
 
         assertThat(session.toString()).doesNotContain("remote-secret-token")
     }

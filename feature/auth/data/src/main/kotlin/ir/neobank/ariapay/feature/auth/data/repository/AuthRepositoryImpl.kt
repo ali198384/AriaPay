@@ -42,14 +42,19 @@ class AuthRepositoryImpl (
             return AuthResult.Failure(response.error.toDomain())
         }
 
-        val token = response.session?.accessToken
+        val session = response.session
             ?: return AuthResult.Failure(AuthError.Network)
 
         preferences.apply {
-            saveSession(token)
+            saveSession(session.accessToken)
             setLoggedIn(true)
         }
-        return AuthResult.Success(AuthSession(token))
+        return AuthResult.Success(
+            AuthSession(
+                accessToken = session.accessToken,
+                userId = session.userId,
+            ),
+        )
     }
 }
 

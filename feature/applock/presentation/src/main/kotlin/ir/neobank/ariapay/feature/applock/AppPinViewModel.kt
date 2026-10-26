@@ -13,13 +13,12 @@ import ir.neobank.ariapay.feature.applock.contract.AppPinMode
 import ir.neobank.ariapay.feature.applock.contract.AppPinUiState
 import ir.neobank.ariapay.feature.applock.domain.AppPinRepository
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,8 +32,8 @@ class AppPinViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AppPinUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _effect = MutableSharedFlow<AppPinEffect>(extraBufferCapacity = 1)
-    val effect: SharedFlow<AppPinEffect> = _effect.asSharedFlow()
+    private val _effect = Channel<AppPinEffect>(capacity = Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
 
     // Compose receives only a digit count; it never receives the raw PIN.
     private val enteredPin = CharArray(APP_PIN_LENGTH)
@@ -170,7 +169,7 @@ class AppPinViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(enteredDigitCount = 0, isLoading = false, error = null)
                 }
-                _effect.tryEmit(AppPinEffect.PinAccepted)
+                _effect.trySend(AppPinEffect.PinAccepted)
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (_: Exception) {
@@ -236,7 +235,7 @@ class AppPinViewModel @Inject constructor(
         _uiState.update {
             it.copy(enteredDigitCount = 0, isLoading = false, error = null)
         }
-        _effect.tryEmit(AppPinEffect.PinAccepted)
+        _effect.trySend(AppPinEffect.PinAccepted)
     }
 
     private fun showPinError(error: AppPinError) {

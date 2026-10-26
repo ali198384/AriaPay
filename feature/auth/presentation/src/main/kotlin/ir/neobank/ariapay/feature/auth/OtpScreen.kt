@@ -66,13 +66,15 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun OtpRoute(
     onBack: () -> Unit,
-    onNavigateToHome: () -> Unit,
+    onNavigateToHome: (userId: String) -> Unit,
     viewModel: AuthViewModel = hiltViewModel(),
 ) {
     val currentOnNavigateToHome by rememberUpdatedState(onNavigateToHome)
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
-            if (effect == AuthEffect.NavigateToHome) currentOnNavigateToHome()
+            if (effect is AuthEffect.NavigateToHome) {
+                currentOnNavigateToHome(effect.userId)
+            }
         }
     }
 

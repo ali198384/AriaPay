@@ -28,8 +28,10 @@ class SessionManager(
 
     private val stateLock = Any()
     private val _state = MutableStateFlow<AppSessionState>(AppSessionState.SignedOut)
+    private val _currentUserId = MutableStateFlow<String?>(null)
 
     val state: StateFlow<AppSessionState> = _state.asStateFlow()
+    val currentUserId: StateFlow<String?> = _currentUserId.asStateFlow()
 
     private var lastActivityAtMillis: Long? = null
     private var activityGeneration = 0L
@@ -37,6 +39,18 @@ class SessionManager(
 
     /** Starts a fresh authenticated session after successful sign-in. */
     fun startSession() = synchronized(stateLock) {
+        startSessionLocked()
+    }
+
+    /** Starts a session with the stable user ID returned by the authentication service. */
+    fun startSession(userId: String) = synchronized(stateLock) {
+        val normalizedUserId = userId.trim()
+        require(normalizedUserId.isNotEmpty()) { "User ID must not be blank" }
+        _currentUserId.value = normalizedUserId
+        startSessionLocked()
+    }
+
+    private fun startSessionLocked() {
         activityGeneration++
         lastActivityAtMillis = nowMillis()
         _state.value = AppSessionState.Unlocked
@@ -103,6 +117,7 @@ class SessionManager(
         activityGeneration++
         cancelExpiry()
         lastActivityAtMillis = null
+        _currentUserId.value = null
         _state.value = AppSessionState.SignedOut
     }
 

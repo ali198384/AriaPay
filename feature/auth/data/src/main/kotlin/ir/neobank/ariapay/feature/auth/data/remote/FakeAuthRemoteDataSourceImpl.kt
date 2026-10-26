@@ -44,7 +44,10 @@ class FakeAuthRemoteDataSourceImpl(
                 else -> {
                     pendingUntilMillis.remove(normalizedMobile)
                     AuthRemoteResponse(
-                        session = AuthRemoteSession(accessToken = "fake-access-token")
+                        session = AuthRemoteSession(
+                            accessToken = "fake-access-token",
+                            userId = DEMO_USER_ID,
+                        ),
                     )
                 }
             }
@@ -53,6 +56,7 @@ class FakeAuthRemoteDataSourceImpl(
 
     private companion object {
         const val DEMO_OTP = "123456"
+        const val DEMO_USER_ID = "demo-user-001"
         const val OTP_TTL_MILLIS = 120_000L
         const val REQUEST_DELAY_MILLIS = 300L
     }

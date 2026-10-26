@@ -23,7 +23,7 @@ class FakeAuthRepositoryTest {
     @Test
     fun `تأیید موفق توکن را ذخیره و ورود را روشن می‌کند`() = runTest {
         val remote = StubRemote(
-            AuthRemoteResponse(AuthRemoteSession("demo-access")),
+            AuthRemoteResponse(AuthRemoteSession("demo-access", "demo-user")),
         )
         val preferences = MemoryPreferences()
         val repository = FakeAuthRepository(remote, preferences)

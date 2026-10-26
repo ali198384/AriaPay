@@ -21,8 +21,8 @@ fun NavGraphBuilder.otpNavHost(
         OtpRoute(
             viewModel = authViewModel,
             onBack = { navController.popBackStack() },
-            onNavigateToHome = {
-                sessionManager.startSession()
+            onNavigateToHome = { userId ->
+                sessionManager.startSession(userId)
                 navController.navigate(AppRoute.AppPin.route) {
                     popUpTo(AppRoute.AuthGraph.route) {
                         inclusive = true

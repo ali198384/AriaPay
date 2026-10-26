@@ -17,17 +17,16 @@ import ir.neobank.ariapay.feature.auth.contract.MobileNumberUiState
 import ir.neobank.ariapay.feature.auth.contract.OtpUiState
 import ir.neobank.ariapay.feature.auth.contract.toMobileNumberUiState
 import ir.neobank.ariapay.feature.auth.contract.toOtpUiState
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -64,8 +63,8 @@ class AuthViewModel @Inject constructor(
     private val _resendSecondsLeft = MutableStateFlow(0)
     val resendSecondsLeft: StateFlow<Int> = _resendSecondsLeft.asStateFlow()
 
-    private val _effect = MutableSharedFlow<AuthEffect>(extraBufferCapacity = 1)
-    val effect: SharedFlow<AuthEffect> = _effect.asSharedFlow()
+    private val _effect = Channel<AuthEffect>(capacity = Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
 
     private var resendJob: Job? = null
     private var otpRequestedForMobileNumber: String? = null
@@ -134,7 +133,7 @@ class AuthViewModel @Inject constructor(
                         },
                     )
                 }
-                _effect.tryEmit(AuthEffect.NavigateToOtp)
+                _effect.trySend(AuthEffect.NavigateToOtp)
                 return@launch
             }
 
@@ -158,7 +157,7 @@ class AuthViewModel @Inject constructor(
                         )
                     }
                     startResendCountdown()
-                    if (!isResend) _effect.tryEmit(AuthEffect.NavigateToOtp)
+                    if (!isResend) _effect.trySend(AuthEffect.NavigateToOtp)
                 }
 
                 is AuthResult.Failure -> {
@@ -195,7 +194,7 @@ class AuthViewModel @Inject constructor(
                     }
                     _resendSecondsLeft.value = 0
                     otpRequestedForMobileNumber = null
-                    _effect.tryEmit(AuthEffect.NavigateToHome)
+                    _effect.trySend(AuthEffect.NavigateToHome(result.value.userId))
                 }
 
                 is AuthResult.Failure -> {

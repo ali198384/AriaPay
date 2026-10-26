@@ -55,7 +55,7 @@ class AuthUseCaseTest {
 
     @Test
     fun `شماره و کد معتبر به Repository می‌رسند`() = runTest {
-        val session = AuthSession("GAPGPTMASKTOKENedx72m5dizbX0X")
+        val session = AuthSession("GAPGPTMASKTOKENedx72m5dizbX0X", "demo-user")
         val repository = RecordingRepository(
             verifyResult = AuthResult.Success(session),
         )
@@ -72,7 +72,7 @@ class AuthUseCaseTest {
     private class RecordingRepository(
         private val requestResult: AuthResult<Unit> = AuthResult.Success(Unit),
         private val verifyResult: AuthResult<AuthSession> =
-            AuthResult.Success(AuthSession("GAPGPTMASKTOKENedx72m5dizbX1X")),
+            AuthResult.Success(AuthSession("GAPGPTMASKTOKENedx72m5dizbX1X", "demo-user")),
     ) : AuthRepository {
         var requestCalls: Int = 0
         var verifyCalls: Int = 0

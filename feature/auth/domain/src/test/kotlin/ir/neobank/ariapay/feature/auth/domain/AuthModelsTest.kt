@@ -55,13 +55,13 @@ class AuthModelsTest {
     @Test
     fun `توکن خالی نشست نمی‌سازد`() {
         assertThrows<IllegalArgumentException> {
-            AuthSession(" ")
+            AuthSession(" ", "demo-user")
         }
     }
 
     @Test
     fun `نمایش نشست توکن دسترسی را افشا نمی‌کند`() {
-        val session = AuthSession("demo-access-token")
+        val session = AuthSession("demo-access-token", "demo-user")
 
         assertThat(session.toString()).doesNotContain("demo-access-token")
     }

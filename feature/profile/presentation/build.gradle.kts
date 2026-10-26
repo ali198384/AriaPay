@@ -8,5 +8,6 @@ android {
 
 dependencies {
     implementation(projects.core.designsystem)
+    implementation(projects.core.session)
     implementation(projects.feature.profile.domain)
 }
