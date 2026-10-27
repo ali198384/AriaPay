@@ -1,4 +1,9 @@
-package ir.neobank.ariapay.feature.auth.domain
+package ir.neobank.ariapay.feature.auth.domain.usecase
+
+import ir.neobank.ariapay.feature.auth.domain.AuthError
+import ir.neobank.ariapay.feature.auth.domain.AuthResult
+import ir.neobank.ariapay.feature.auth.domain.MobileNumber
+import ir.neobank.ariapay.feature.auth.domain.repository.AuthRepository
 
 
 class RequestOtpUseCase(

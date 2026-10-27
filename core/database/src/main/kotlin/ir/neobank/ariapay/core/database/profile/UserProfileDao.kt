@@ -21,6 +21,9 @@ interface UserProfileDao {
     @Query("UPDATE user_profile SET full_name = :fullName WHERE user_id = :userId")
     suspend fun updateFullName(userId: String, fullName: String): Int
 
+    @Query("UPDATE user_profile SET profile_photo_path = :path WHERE user_id = :userId")
+    suspend fun updateProfilePhotoPath(userId: String, path: String): Int
+
     @Query("DELETE FROM user_profile WHERE user_id = :userId")
     suspend fun deleteByUserId(userId: String): Int
 

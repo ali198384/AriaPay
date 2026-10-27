@@ -1,4 +1,6 @@
-package ir.neobank.ariapay.feature.profile.domain
+package ir.neobank.ariapay.feature.profile.domain.usecase
+
+import ir.neobank.ariapay.feature.profile.domain.repository.ProfileRepository
 
 class LogoutUseCase(
     private val repository: ProfileRepository,

@@ -1,7 +1,8 @@
-package ir.neobank.ariapay.feature.profile.domain
+package ir.neobank.ariapay.feature.profile.domain.usecase
 
 import ir.neobank.ariapay.core.common.result.AriaException
 import ir.neobank.ariapay.core.common.result.AriaResult
+import ir.neobank.ariapay.feature.profile.domain.repository.ProfileRepository
 
 class UpdateNameUseCase(
     private val repository: ProfileRepository,

@@ -4,9 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import ir.neobank.ariapay.feature.auth.domain.AuthRepository
-import ir.neobank.ariapay.feature.auth.domain.RequestOtpUseCase
-import ir.neobank.ariapay.feature.auth.domain.VerifyOtpUseCase
+import ir.neobank.ariapay.feature.auth.domain.repository.AuthRepository
+import ir.neobank.ariapay.feature.auth.domain.usecase.RequestOtpUseCase
+import ir.neobank.ariapay.feature.auth.domain.usecase.VerifyOtpUseCase
 
 @Module
 @InstallIn(ViewModelComponent::class)

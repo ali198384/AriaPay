@@ -2,7 +2,7 @@ package ir.neobank.ariapay.feature.auth.data.repository
 
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSource
 import ir.neobank.ariapay.feature.auth.domain.AuthError
-import ir.neobank.ariapay.feature.auth.domain.AuthRepository
+import ir.neobank.ariapay.feature.auth.domain.repository.AuthRepository
 import ir.neobank.ariapay.feature.auth.domain.AuthResult
 import ir.neobank.ariapay.feature.auth.domain.AuthSession
 import ir.neobank.ariapay.feature.auth.domain.MobileNumber

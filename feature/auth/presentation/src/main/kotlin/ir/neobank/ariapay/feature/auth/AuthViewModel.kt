@@ -6,8 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.neobank.ariapay.core.common.util.FinancialInputNormalizer
 import ir.neobank.ariapay.feature.auth.domain.AuthError
 import ir.neobank.ariapay.feature.auth.domain.AuthResult
-import ir.neobank.ariapay.feature.auth.domain.RequestOtpUseCase
-import ir.neobank.ariapay.feature.auth.domain.VerifyOtpUseCase
+import ir.neobank.ariapay.feature.auth.domain.usecase.RequestOtpUseCase
+import ir.neobank.ariapay.feature.auth.domain.usecase.VerifyOtpUseCase
 import ir.neobank.ariapay.feature.auth.contract.AuthEffect
 import ir.neobank.ariapay.feature.auth.contract.AuthEvent
 import ir.neobank.ariapay.feature.auth.contract.AuthOperation

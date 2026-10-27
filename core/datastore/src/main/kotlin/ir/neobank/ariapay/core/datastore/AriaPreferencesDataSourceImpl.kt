@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import ir.neobank.ariapay.core.common.settings.AppThemeMode
 import ir.neobank.ariapay.core.security.SecureValueCipher
 import ir.neobank.ariapay.core.security.SecureValuePurpose
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,14 @@ internal class AriaPreferencesDataSourceImpl(
             preferences[AriaPreferenceKeys.encryptedAccessToken]?.let { encryptedToken ->
                 cipher.decrypt(encryptedToken, SecureValuePurpose.ACCESS_TOKEN)
             }
+        }
+
+    override val themeMode: Flow<AppThemeMode> = dataStore.data
+        .safe()
+        .map { preferences ->
+            preferences[AriaPreferenceKeys.themeMode]
+                ?.let { storedValue -> AppThemeMode.entries.firstOrNull { it.name == storedValue } }
+                ?: AppThemeMode.SYSTEM
         }
 
     override suspend fun saveSession(accessToken: String) {
@@ -62,6 +71,10 @@ internal class AriaPreferencesDataSourceImpl(
             preferences.remove(AriaPreferenceKeys.loggedIn)
             preferences.remove(AriaPreferenceKeys.encryptedAccessToken)
         }
+    }
+
+    override suspend fun setThemeMode(mode: AppThemeMode) {
+        dataStore.edit { preferences -> preferences[AriaPreferenceKeys.themeMode] = mode.name }
     }
 
     private fun Flow<Preferences>.safe(): Flow<Preferences> = catch { error ->

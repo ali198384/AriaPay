@@ -3,13 +3,13 @@ package ir.neobank.ariapay.feature.auth
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import ir.neobank.ariapay.feature.auth.domain.AuthError
-import ir.neobank.ariapay.feature.auth.domain.AuthRepository
+import ir.neobank.ariapay.feature.auth.domain.repository.AuthRepository
 import ir.neobank.ariapay.feature.auth.domain.AuthResult
 import ir.neobank.ariapay.feature.auth.domain.AuthSession
 import ir.neobank.ariapay.feature.auth.domain.MobileNumber
 import ir.neobank.ariapay.feature.auth.domain.OtpCode
-import ir.neobank.ariapay.feature.auth.domain.RequestOtpUseCase
-import ir.neobank.ariapay.feature.auth.domain.VerifyOtpUseCase
+import ir.neobank.ariapay.feature.auth.domain.usecase.RequestOtpUseCase
+import ir.neobank.ariapay.feature.auth.domain.usecase.VerifyOtpUseCase
 import ir.neobank.ariapay.core.testing.MainDispatcherExtension
 import ir.neobank.ariapay.feature.auth.contract.AuthEffect
 import ir.neobank.ariapay.feature.auth.contract.AuthEvent

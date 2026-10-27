@@ -13,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSource
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSourceImpl
+import ir.neobank.ariapay.core.common.settings.AppThemeSettings
 import ir.neobank.ariapay.core.security.SecureValueCipher
 import javax.inject.Singleton
 
@@ -34,5 +35,9 @@ internal object DataStoreModule {
         dataStore: DataStore<Preferences>,
         cipher: SecureValueCipher,
     ): AriaPreferencesDataSource = AriaPreferencesDataSourceImpl(dataStore, cipher)
+
+    @Provides
+    @Singleton
+    fun provideAppThemeSettings(source: AriaPreferencesDataSource): AppThemeSettings = source
 
 }

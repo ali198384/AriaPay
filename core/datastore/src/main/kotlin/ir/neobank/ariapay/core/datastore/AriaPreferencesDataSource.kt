@@ -2,8 +2,9 @@ package ir.neobank.ariapay.core.datastore
 
 
 import kotlinx.coroutines.flow.Flow
+import ir.neobank.ariapay.core.common.settings.AppThemeSettings
 
-interface AriaPreferencesDataSource {
+interface AriaPreferencesDataSource : AppThemeSettings {
     val isLoggedIn: Flow<Boolean>
     val accessToken: Flow<String?>
 

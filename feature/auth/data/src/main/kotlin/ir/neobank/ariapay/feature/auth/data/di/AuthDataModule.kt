@@ -7,7 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ir.neobank.ariapay.feature.auth.data.repository.AuthRepositoryImpl
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSource
-import ir.neobank.ariapay.feature.auth.domain.AuthRepository
+import ir.neobank.ariapay.feature.auth.domain.repository.AuthRepository
 import ir.neobank.ariapay.feature.auth.data.remote.AuthRemoteDataSource
 import ir.neobank.ariapay.feature.auth.data.remote.FakeAuthRemoteDataSourceImpl
 import javax.inject.Singleton

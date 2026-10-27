@@ -1,5 +1,6 @@
-package ir.neobank.ariapay.feature.profile.domain
+package ir.neobank.ariapay.feature.profile.domain.repository
 
+import ir.neobank.ariapay.feature.profile.domain.model.UserProfile
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
@@ -12,6 +13,8 @@ interface ProfileRepository {
 
     /** Returns false when no cached profile exists for [userId]. */
     suspend fun updateName(userId: String, fullName: String): Boolean
+
+    suspend fun updateProfilePhotoPath(userId: String, path: String): Boolean
 
     /** Clears the authenticated session and cached profile data on this device. */
     suspend fun logout()

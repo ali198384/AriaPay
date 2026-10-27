@@ -1,5 +1,7 @@
-package ir.neobank.ariapay.feature.profile.domain
+package ir.neobank.ariapay.feature.profile.domain.usecase
 
+import ir.neobank.ariapay.feature.profile.domain.model.UserProfile
+import ir.neobank.ariapay.feature.profile.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetProfileUseCase(

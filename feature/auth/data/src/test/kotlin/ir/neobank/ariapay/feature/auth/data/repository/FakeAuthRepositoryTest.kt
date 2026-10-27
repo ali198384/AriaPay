@@ -7,6 +7,7 @@ import ir.neobank.ariapay.feature.auth.domain.AuthError
 import ir.neobank.ariapay.feature.auth.domain.AuthResult
 import ir.neobank.ariapay.feature.auth.domain.MobileNumber
 import ir.neobank.ariapay.feature.auth.domain.OtpCode
+import ir.neobank.ariapay.feature.auth.domain.repository.AuthRepository
 import ir.neobank.ariapay.feature.auth.data.remote.AuthRemoteDataSource
 import ir.neobank.ariapay.feature.auth.data.remote.AuthRemoteError
 import ir.neobank.ariapay.feature.auth.data.remote.AuthRemoteResponse

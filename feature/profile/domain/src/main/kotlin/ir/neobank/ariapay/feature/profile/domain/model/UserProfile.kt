@@ -1,4 +1,4 @@
-package ir.neobank.ariapay.feature.profile.domain
+package ir.neobank.ariapay.feature.profile.domain.model
 
 /** Profile data exposed to the rest of the app, independent of Room and network DTOs. */
 data class UserProfile(

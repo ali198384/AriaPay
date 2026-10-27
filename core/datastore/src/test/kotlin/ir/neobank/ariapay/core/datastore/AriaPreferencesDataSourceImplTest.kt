@@ -4,10 +4,15 @@ package ir.neobank.ariapay.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import com.google.common.truth.Truth.assertThat
+import ir.neobank.ariapay.core.common.settings.AppThemeMode
 import ir.neobank.ariapay.core.security.SecureValueCipher
 import ir.neobank.ariapay.core.security.SecureValuePurpose
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -23,10 +28,10 @@ class AriaPreferencesDataSourceImplTest {
         val dataStore: DataStore<Preferences>,
     )
 
-    private fun fixture(
-        file: File = File(directory, "aria_session.preferences_pb"),
-    ): Fixture {
-        val dataStore = PreferenceDataStoreFactory.create(produceFile = { file })
+    private fun fixture(file: File? = null): Fixture {
+        val dataStore = file?.let { backingFile ->
+            PreferenceDataStoreFactory.create(produceFile = { backingFile })
+        } ?: InMemoryPreferencesDataStore()
         return Fixture(
             source = AriaPreferencesDataSourceImpl(dataStore, TestSecureValueCipher),
             dataStore = dataStore,
@@ -39,6 +44,7 @@ class AriaPreferencesDataSourceImplTest {
 
         assertThat(source.isLoggedIn.first()).isFalse()
         assertThat(source.accessToken.first()).isNull()
+        assertThat(source.themeMode.first()).isEqualTo(AppThemeMode.SYSTEM)
     }
 
     @Test
@@ -96,6 +102,19 @@ class AriaPreferencesDataSourceImplTest {
     }
 
     @Test
+    fun `انتخاب تم ذخیره می‌شود و بعد از پاک‌کردن نشست باقی می‌ماند`() = runTest {
+        val source = fixture().source
+
+        source.setThemeMode(AppThemeMode.DARK)
+        source.saveSession("demo-access")
+        source.clearSession()
+
+        assertThat(source.themeMode.first()).isEqualTo(AppThemeMode.DARK)
+        assertThat(source.isLoggedIn.first()).isFalse()
+        assertThat(source.accessToken.first()).isNull()
+    }
+
+    @Test
     fun `فایل خراب به‌جای کرش، مقدار پیش‌فرض می‌دهد`() = runTest {
         val file = File(directory, "broken.preferences_pb")
         file.writeText("not-a-preferences-file")
@@ -130,4 +149,16 @@ private object TestSecureValueCipher : SecureValueCipher {
         check(ciphertext.startsWith(prefix)) { "Ciphertext was created for another purpose" }
         return ciphertext.removePrefix(prefix)
     }
+}
+
+private class InMemoryPreferencesDataStore : DataStore<Preferences> {
+    private val preferences = MutableStateFlow(emptyPreferences())
+    private val mutex = Mutex()
+
+    override val data = preferences
+
+    override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences =
+        mutex.withLock {
+            transform(preferences.value).also { preferences.value = it }
+        }
 }
