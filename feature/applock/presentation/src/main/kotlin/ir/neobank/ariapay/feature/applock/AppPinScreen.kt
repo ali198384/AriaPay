@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,7 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Backspace
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.ButtonDefaults
@@ -39,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -170,11 +172,18 @@ fun AppPinScreen(
     ) {
         val contentWidth = when (widthClass) {
             WindowWidthClass.COMPACT -> 440.dp
-            WindowWidthClass.MEDIUM -> 480.dp
-            WindowWidthClass.EXPANDED -> 520.dp
+            WindowWidthClass.MEDIUM -> 720.dp
+            WindowWidthClass.EXPANDED -> 960.dp
         }
         val isShortScreen = maxHeight < 680.dp
+        val useTwoPaneLayout = widthClass == WindowWidthClass.EXPANDED ||
+            (widthClass == WindowWidthClass.MEDIUM && maxHeight < 520.dp)
         val verticalGap = if (isShortScreen) 14.dp else 22.dp
+        val horizontalPadding = when (widthClass) {
+            WindowWidthClass.COMPACT -> 20.dp
+            WindowWidthClass.MEDIUM -> 32.dp
+            WindowWidthClass.EXPANDED -> 48.dp
+        }
 
         Column(
             modifier = Modifier
@@ -183,17 +192,18 @@ fun AppPinScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(
-                    horizontal = 24.dp,
+                    horizontal = horizontalPadding,
                     vertical = if (isShortScreen) 16.dp else 28.dp,
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(verticalGap),
         ) {
             when (state.mode) {
-                AppPinMode.INITIALIZING -> InitializingContent()
+                AppPinMode.INITIALIZING -> InitializingContent(isShortScreen = isShortScreen)
                 AppPinMode.UNAVAILABLE -> UnavailableContent(
                     error = state.error,
                     onRetry = onRetry,
+                    isShortScreen = isShortScreen,
                 )
 
                 AppPinMode.CREATE,
@@ -205,6 +215,7 @@ fun AppPinScreen(
                     isBiometricAvailable = isBiometricAvailable,
                     onBiometricPressed = onBiometricPressed,
                     isShortScreen = isShortScreen,
+                    useTwoPaneLayout = useTwoPaneLayout,
                 )
             }
         }
@@ -219,9 +230,64 @@ private fun PinEntryContent(
     isBiometricAvailable: Boolean,
     onBiometricPressed: () -> Unit,
     isShortScreen: Boolean,
+    useTwoPaneLayout: Boolean,
 ) {
-    PinHeader(mode = state.mode)
+    if (useTwoPaneLayout) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                modifier = Modifier.weight(0.95f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                PinHeader(mode = state.mode)
+                SecurityNotice()
+            }
+            Column(
+                modifier = Modifier.weight(1.05f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                PinCodeControls(
+                    state = state,
+                    onDigitPressed = onDigitPressed,
+                    onDeletePressed = onDeletePressed,
+                    isBiometricAvailable = isBiometricAvailable,
+                    onBiometricPressed = onBiometricPressed,
+                )
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(if (isShortScreen) 14.dp else 22.dp),
+        ) {
+            PinHeader(mode = state.mode)
+            PinCodeControls(
+                state = state,
+                onDigitPressed = onDigitPressed,
+                onDeletePressed = onDeletePressed,
+                isBiometricAvailable = isBiometricAvailable,
+                onBiometricPressed = onBiometricPressed,
+            )
+            if (!isShortScreen) Spacer(Modifier.height(4.dp))
+            SecurityNotice()
+        }
+    }
+}
 
+@Composable
+private fun PinCodeControls(
+    state: AppPinUiState,
+    onDigitPressed: (Char) -> Unit,
+    onDeletePressed: () -> Unit,
+    isBiometricAvailable: Boolean,
+    onBiometricPressed: () -> Unit,
+) {
     PinDots(
         enteredDigitCount = state.enteredDigitCount,
         isError = state.error != null,
@@ -230,7 +296,7 @@ private fun PinEntryContent(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(28.dp),
+            .heightIn(min = 28.dp),
         contentAlignment = Alignment.Center,
     ) {
         val errorMessage = state.error?.toPersianMessage()
@@ -267,9 +333,6 @@ private fun PinEntryContent(
         onDigitPressed = onDigitPressed,
         onDeletePressed = onDeletePressed,
     )
-
-    if (!isShortScreen) Spacer(Modifier.height(4.dp))
-    SecurityNotice()
 }
 
 @Composable
@@ -343,29 +406,31 @@ private fun PinDots(
         MaterialTheme.colorScheme.primary
     }
 
-    Row(
-        modifier = Modifier.clearAndSetSemantics {
-            contentDescription =
-                "${count.toString().toPersianDigits()} رقم از ${APP_PIN_LENGTH.toString().toPersianDigits()} رقم وارد شده"
-        },
-        horizontalArrangement = Arrangement.spacedBy(18.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        repeat(APP_PIN_LENGTH) { index ->
-            val isFilled = index < count
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .clip(CircleShape)
-                    .background(if (isFilled) dotColor else Color.Transparent)
-                    .border(
-                        border = BorderStroke(
-                            width = 1.5.dp,
-                            color = if (isFilled) dotColor else MaterialTheme.colorScheme.outline,
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Row(
+            modifier = Modifier.clearAndSetSemantics {
+                contentDescription =
+                    "${count.toString().toPersianDigits()} رقم از ${APP_PIN_LENGTH.toString().toPersianDigits()} رقم وارد شده"
+            },
+            horizontalArrangement = Arrangement.spacedBy(18.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            repeat(APP_PIN_LENGTH) { index ->
+                val isFilled = index < count
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clip(CircleShape)
+                        .background(if (isFilled) dotColor else Color.Transparent)
+                        .border(
+                            border = BorderStroke(
+                                width = 1.5.dp,
+                                color = if (isFilled) dotColor else MaterialTheme.colorScheme.outline,
+                            ),
+                            shape = CircleShape,
                         ),
-                        shape = CircleShape,
-                    ),
-            )
+                )
+            }
         }
     }
 }
@@ -490,7 +555,7 @@ private fun PinKeyButton(
             )
 
             PinKey.Delete -> Icon(
-                imageVector = Icons.Filled.Backspace,
+                imageVector = Icons.AutoMirrored.Filled.Backspace,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
             )
@@ -526,11 +591,11 @@ private fun SecurityNotice() {
 }
 
 @Composable
-private fun InitializingContent() {
+private fun InitializingContent(isShortScreen: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 120.dp),
+            .padding(vertical = if (isShortScreen) 48.dp else 120.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -543,11 +608,12 @@ private fun InitializingContent() {
 private fun UnavailableContent(
     error: AppPinError?,
     onRetry: () -> Unit,
+    isShortScreen: Boolean,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 64.dp),
+            .padding(vertical = if (isShortScreen) 24.dp else 64.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -635,10 +701,34 @@ private val pinKeypadRows: List<List<PinKey?>> = listOf(
     listOf(null, PinKey.Digit('0'), PinKey.Delete),
 )
 
-@Preview(showBackground = true, locale = "fa")
-@Preview(showBackground = true, locale = "fa", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, name = "Phone portrait", widthDp = 393, heightDp = 852, locale = "fa")
+@Preview(
+    showBackground = true,
+    name = "Phone portrait dark",
+    widthDp = 393,
+    heightDp = 852,
+    locale = "fa",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
 @Composable
 private fun AppPinScreenPreview() {
+    AppPinScreenPreviewContent(widthClass = WindowWidthClass.COMPACT)
+}
+
+@Preview(showBackground = true, name = "Phone landscape", widthDp = 800, heightDp = 440, locale = "fa")
+@Composable
+private fun AppPinScreenLandscapePreview() {
+    AppPinScreenPreviewContent(widthClass = WindowWidthClass.MEDIUM)
+}
+
+@Preview(showBackground = true, name = "Tablet", widthDp = 1000, heightDp = 800, locale = "fa")
+@Composable
+private fun AppPinScreenTabletPreview() {
+    AppPinScreenPreviewContent(widthClass = WindowWidthClass.EXPANDED)
+}
+
+@Composable
+private fun AppPinScreenPreviewContent(widthClass: WindowWidthClass) {
     AriaTheme {
         Surface {
             AppPinScreen(
@@ -649,6 +739,7 @@ private fun AppPinScreenPreview() {
                 onDigitPressed = {},
                 onDeletePressed = {},
                 onRetry = {},
+                widthClass = widthClass,
             )
         }
     }

@@ -79,7 +79,6 @@ fun OtpRoute(
     }
 
     val state by viewModel.otpUiState.collectAsStateWithLifecycle()
-    val widthClass = rememberWindowWidthClass()
     val onCodeChange: (String) -> Unit = { value ->
         viewModel.onEvent(AuthEvent.OtpCodeChanged(value))
     }
@@ -110,7 +109,7 @@ fun OtpRoute(
                 onResend = onResend,
             )
         },
-        widthClass = widthClass,
+        widthClass = rememberWindowWidthClass()
     )
 }
 

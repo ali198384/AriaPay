@@ -53,6 +53,13 @@ fun AppNavHost(
         }
 
         appPinNavHost(navController)
-        homeNavHost()
+        homeNavHost(
+            onNavigateToProfile = {
+                navController.navigate(AppRoute.Profile.route) {
+                    launchSingleTop = true
+                }
+            },
+        )
+        profileNavHost(navController)
     }
 }

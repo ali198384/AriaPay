@@ -5,6 +5,9 @@ plugins {
 
 android {
     namespace = "ir.neobank.ariapay"
+    buildFeatures {
+        buildConfig = true
+    }
     compileSdk {
         version = release(37)
     }

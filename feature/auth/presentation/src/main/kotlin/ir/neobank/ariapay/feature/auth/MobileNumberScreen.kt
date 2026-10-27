@@ -67,9 +67,6 @@ fun MobileNumberRoute(
         }
     }
 
-
-    val widthClass = rememberWindowWidthClass()
-
     val state by viewModel.mobileNumberUiState.collectAsStateWithLifecycle()
 
     val onMobileNumberChange: (String) -> Unit = { value ->
@@ -87,7 +84,7 @@ fun MobileNumberRoute(
         errorMessage = state.errorMessage,
         onMobileNumberChange = onMobileNumberChange,
         onContinue = onContinue,
-        widthClass = widthClass,
+        widthClass = rememberWindowWidthClass()
     )
 }
 

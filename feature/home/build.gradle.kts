@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(projects.core.designsystem)
+    implementation(libs.androidx.compose.material.icons.extended)
 }

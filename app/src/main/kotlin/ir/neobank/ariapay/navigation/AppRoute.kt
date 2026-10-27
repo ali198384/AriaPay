@@ -7,4 +7,5 @@ sealed class AppRoute(val route: String) {
     data object Otp : AppRoute("auth/otp")
     data object AppPin : AppRoute("app-pin")
     data object Home : AppRoute("home")
+    data object Profile : AppRoute("profile")
 }
