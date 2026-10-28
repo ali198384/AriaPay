@@ -1,5 +1,7 @@
 # AriaPay
 
+<div dir="rtl" align="right">
+
 ## معرفی
 
 AriaPay یک نمونه‌کار اندرویدی در حوزهٔ نئوبانک است که با Kotlin و Jetpack Compose ساخته می‌شود. هدف آن نمایش توانایی طراحی معماری قابل نگهداری، ساخت جریان‌های مالی نمایشی، توجه به امنیت و تجربهٔ فارسی، و نوشتن تست برای بخش‌های مختلف برنامه است.
@@ -40,7 +42,9 @@ AriaPay یک نمونه‌کار اندرویدی در حوزهٔ نئوبانک
 
 درخت زیر فقط ماژول‌های اصلی را نشان می‌دهد؛ تقسیم داخلی featureها به لایه‌ها در بخش «معماری» توضیح داده شده است. **موارد پررنگ با ✅ در پروژه موجودند**، Home فعلی با 🟡 هنوز ساده است و موارد کم‌رنگ با ◻️ در roadmap آمده‌اند.
 
-<pre>
+</div>
+
+<pre dir="ltr" align="left">
 AriaPay/
 ├── <strong>app/</strong> — ✅ اپلیکیشن اصلی، DI، تم و ناوبری
 │   └── src/
@@ -80,6 +84,8 @@ AriaPay/
 ├── <small><i>config/ — برنامه‌ریزی‌شده؛ قواعد Detekt و تنظیمات امنیت شبکه</i></small>
 └── <strong>gradle/libs.versions.toml</strong> — ✅ مرجع متمرکز نسخهٔ کتابخانه‌ها
 </pre>
+
+<div dir="rtl" align="right">
 
 ## تم روشن و تیره
 
@@ -127,31 +133,25 @@ KMP در محدودهٔ نزدیک roadmap نیست؛ پس از کامل‌شد�
 - Android SDK 37؛ حداقل نسخهٔ Android پشتیبانی‌شده API 26 است.
 - دسترسی به مخزن‌های وابستگی تعریف‌شده در Gradle و تنظیم SDK در فایل محلی `local.properties` در صورت نیاز.
 
-### ساخت Debug
-
-Windows:
-
-```powershell
-.\gradlew.bat :app:assembleDebug
-```
-
-Linux/macOS:
-
-```bash
-./gradlew :app:assembleDebug
-```
-
 اجرای تست‌های unit:
+
+</div>
 
 ```bash
 ./gradlew test
 ```
 
+<div dir="rtl" align="right">
+
 اجرای تست‌های instrumentation به emulator یا دستگاه متصل نیاز دارد:
+
+</div>
 
 ```bash
 ./gradlew connectedDebugAndroidTest
 ```
+
+<div dir="rtl" align="right">
 
 ## اجرای دمو
 
@@ -165,3 +165,5 @@ Linux/macOS:
 - PAN کامل، CVV و اطلاعات بانکی واقعی ذخیره یا نمایش داده نمی‌شوند.
 - PIN و biometric قفل محلی را باز می‌کنند و جایگزین احراز هویت سمت سرور نیستند.
 - انتقال وجه، پرداخت درگاه، افزایش موجودی و تراکنش واقعی خارج از محدودهٔ نسخهٔ فعلی‌اند.
+
+</div>
