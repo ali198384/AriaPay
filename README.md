@@ -26,10 +26,10 @@
 
 <h2 dir="rtl" align="right">معماری</h2>
 
-<p dir="rtl" align="right">پروژه از <strong>معماری ماژولار Feature-oriented با جداسازی لایه‌ها درون قابلیت‌ها</strong> استفاده می‌کند. هر قابلیت اصلی مالک منطق، قراردادها و داده‌های خودش است. در وضعیت فعلی، Auth، Profile و AppLock به ماژول‌های جداگانهٔ Gradle تقسیم شده‌اند؛ Home به دلیل کوچک‌بودن فعلی یک ماژول ساده دارد و تا وقتی مرز یا نیاز تستی روشنی ایجاد نشود، لایه‌های بیشتری برای آن ساخته نمی‌شود.</p>
+<p dir="rtl" align="right">پروژه از <strong>معماری ماژولار Feature-oriented</strong> استفاده می‌کند و در قابلیت‌های چندلایه، جداسازی <strong>Clean Architecture</strong> میان Presentation، Domain و Data را به‌کار می‌گیرد. هر قابلیت اصلی مالک منطق، قراردادها و داده‌های خودش است. در وضعیت فعلی، Auth، Profile و AppLock به ماژول‌های جداگانهٔ Gradle تقسیم شده‌اند؛ Home به دلیل کوچک‌بودن فعلی یک ماژول ساده دارد و تا وقتی مرز یا نیاز تستی روشنی ایجاد نشود، لایه‌های بیشتری برای آن ساخته نمی‌شود.</p>
 
 <ul dir="rtl" align="right">
-<li><strong>Presentation:</strong> صفحه‌های Compose، ViewModel و قراردادهای UI مثل State، Event و Effect. این بخش مستقیماً با Room، DataStore یا API کار نمی‌کند.</li>
+<li><strong>Presentation و MVI:</strong> صفحه‌های Compose رویدادهای <code>Event</code> را به ViewModel می‌فرستند؛ ViewModel وضعیت تغییرناپذیر <code>UiState</code> را منتشر می‌کند و برای رویدادهای یک‌باره از <code>Effect</code> استفاده می‌شود. UI این وضعیت را مشاهده می‌کند و مستقیماً با Room، DataStore یا API کار نمی‌کند.</li>
 <li><strong>Domain:</strong> مدل‌ها، قوانین کسب‌وکار، قرارداد Repository و UseCaseهای همان قابلیت. تا حد ممکن مستقل از Android و ابزارهای ذخیره‌سازی می‌ماند.</li>
 <li><strong>Data:</strong> پیاده‌سازی Repository، منبع محلی یا remote/fake و تبدیل مدل‌ها برای همان قابلیت.</li>
 <li><strong>Core:</strong> فقط زیرساخت و مفاهیم واقعاً مشترک را نگه می‌دارد؛ منطق مختص Auth یا Profile به Core منتقل نشده است. بنابراین در ساختار فعلی ماژول سراسری <code>:core:domain</code> یا <code>:core:data</code> وجود ندارد.</li>
