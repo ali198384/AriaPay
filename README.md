@@ -24,19 +24,21 @@
 
 صفحهٔ Home فعلی ساده است و نقش نقطهٔ شروع را دارد؛ هنوز داشبورد موجودی، کارت و فعالیت مالی پیاده‌سازی نشده است.
 
-## معماری
+<h2 dir="rtl" align="right">معماری</h2>
 
-پروژه از **معماری ماژولار Feature-oriented با جداسازی لایه‌ها درون قابلیت‌ها** استفاده می‌کند. هر قابلیت اصلی مالک منطق، قراردادها و داده‌های خودش است. در وضعیت فعلی، Auth، Profile و AppLock به ماژول‌های جداگانهٔ Gradle تقسیم شده‌اند؛ Home به دلیل کوچک‌بودن فعلی یک ماژول ساده دارد و تا وقتی مرز یا نیاز تستی روشنی ایجاد نشود، لایه‌های بیشتری برای آن ساخته نمی‌شود.
+<p dir="rtl" align="right">پروژه از <strong>معماری ماژولار Feature-oriented با جداسازی لایه‌ها درون قابلیت‌ها</strong> استفاده می‌کند. هر قابلیت اصلی مالک منطق، قراردادها و داده‌های خودش است. در وضعیت فعلی، Auth، Profile و AppLock به ماژول‌های جداگانهٔ Gradle تقسیم شده‌اند؛ Home به دلیل کوچک‌بودن فعلی یک ماژول ساده دارد و تا وقتی مرز یا نیاز تستی روشنی ایجاد نشود، لایه‌های بیشتری برای آن ساخته نمی‌شود.</p>
 
-- **Presentation:** صفحه‌های Compose، ViewModel و قراردادهای UI مثل State، Event و Effect. این بخش مستقیماً با Room، DataStore یا API کار نمی‌کند.
-- **Domain:** مدل‌ها، قوانین کسب‌وکار، قرارداد Repository و UseCaseهای همان قابلیت. تا حد ممکن مستقل از Android و ابزارهای ذخیره‌سازی می‌ماند.
-- **Data:** پیاده‌سازی Repository، منبع محلی یا remote/fake و تبدیل مدل‌ها برای همان قابلیت.
-- **Core:** فقط زیرساخت و مفاهیم واقعاً مشترک را نگه می‌دارد؛ منطق مختص Auth یا Profile به Core منتقل نشده است. بنابراین در ساختار فعلی ماژول سراسری `:core:domain` یا `:core:data` وجود ندارد.
-- **App:** نقطهٔ ترکیب برنامه است؛ Application، Activity، Hilt، ناوبری سراسری و اتصال featureها در این بخش قرار دارند.
-- **Session:** وضعیت نشست در `:core:session` مشترک است تا AppLock، Profile و پوستهٔ برنامه یک منبع وضعیت داشته باشند.
-- **Database:** `:core:database` مالک ساخت Room و schema مشترک است؛ repository و منطق پروفایل در feature پروفایل می‌مانند.
+<ul dir="rtl" align="right">
+<li><strong>Presentation:</strong> صفحه‌های Compose، ViewModel و قراردادهای UI مثل State، Event و Effect. این بخش مستقیماً با Room، DataStore یا API کار نمی‌کند.</li>
+<li><strong>Domain:</strong> مدل‌ها، قوانین کسب‌وکار، قرارداد Repository و UseCaseهای همان قابلیت. تا حد ممکن مستقل از Android و ابزارهای ذخیره‌سازی می‌ماند.</li>
+<li><strong>Data:</strong> پیاده‌سازی Repository، منبع محلی یا remote/fake و تبدیل مدل‌ها برای همان قابلیت.</li>
+<li><strong>Core:</strong> فقط زیرساخت و مفاهیم واقعاً مشترک را نگه می‌دارد؛ منطق مختص Auth یا Profile به Core منتقل نشده است. بنابراین در ساختار فعلی ماژول سراسری <code>:core:domain</code> یا <code>:core:data</code> وجود ندارد.</li>
+<li><strong>App:</strong> نقطهٔ ترکیب برنامه است؛ Application، Activity، Hilt، ناوبری سراسری و اتصال featureها در این بخش قرار دارند.</li>
+<li><strong>Session:</strong> وضعیت نشست در <code>:core:session</code> مشترک است تا AppLock، Profile و پوستهٔ برنامه یک منبع وضعیت داشته باشند.</li>
+<li><strong>Database:</strong> <code>:core:database</code> مالک ساخت Room و schema مشترک است؛ repository و منطق پروفایل در feature پروفایل می‌مانند.</li>
+</ul>
 
-قاعدهٔ وابستگی این است که UI رویداد را به ViewModel می‌فرستد، ViewModel از قراردادهای Domain استفاده می‌کند و Repository در ماژول Data آن قراردادها را پیاده می‌کند. `:app` ماژول‌های لازم را به هم متصل می‌کند. این ساختار امکان تست منطق را بدون اجرای UI و جدا از سرویس واقعی فراهم می‌کند.
+<p dir="rtl" align="right">قاعدهٔ وابستگی این است که UI رویداد را به ViewModel می‌فرستد، ViewModel از قراردادهای Domain استفاده می‌کند و Repository در ماژول Data آن قراردادها را پیاده می‌کند. <code>:app</code> ماژول‌های لازم را به هم متصل می‌کند. این ساختار امکان تست منطق را بدون اجرای UI و جدا از سرویس واقعی فراهم می‌کند.</p>
 
 ## ساختار ماژول‌ها
 
@@ -121,8 +123,6 @@ AriaPay/
 | Android instrumentation / Gradle Managed Device | تست رفتارهای وابسته به Android روی emulator، در مواردی که unit test کافی نیست. |
 | ZarinPal Sandbox | فقط در صورت نیاز به نمایش پرداخت درگاه یا افزایش موجودی؛ این مورد با انتقال کارت‌به‌کارت یا شبا یکی نیست. |
 | Macrobenchmark | اندازه‌گیری عملکرد پس از کامل‌شدن مسیرهای اصلی برنامه. |
-
-KMP در محدودهٔ نزدیک roadmap نیست؛ پس از کامل‌شدن نمونه‌کار Android می‌توان ضرورت اشتراک‌گذاری بخش‌های Kotlin را جداگانه ارزیابی کرد.
 
 <h2 dir="rtl" align="right">اجرا و تست</h2>
 
