@@ -8,10 +8,10 @@ import com.google.common.truth.Truth.assertThat
 import ir.neobank.ariapay.core.common.settings.AppThemeMode
 import ir.neobank.ariapay.core.database.AriaDatabase
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSource
-import ir.neobank.ariapay.feature.profile.domain.model.UserProfile
-import ir.neobank.ariapay.feature.profile.domain.ProfilePhotoStorage
 import ir.neobank.ariapay.core.session.AppSessionState
 import ir.neobank.ariapay.core.session.SessionManager
+import ir.neobank.ariapay.feature.profile.domain.ProfilePhotoStorage
+import ir.neobank.ariapay.feature.profile.domain.model.UserProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,6 +24,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.time.Instant
 
 @RunWith(AndroidJUnit4::class)
 class ProfileRepositoryImplTest {
@@ -185,7 +186,7 @@ class ProfileRepositoryImplTest {
             kycLevel = "BASIC",
             kycStatus = "VERIFIED",
             accountStatus = "ACTIVE",
-            serverUpdatedAtEpochMillis = 1_800_000_000_000L,
+            serverUpdatedAt = Instant.fromEpochMilliseconds(1_800_000_000_000L),
         )
     }
 }

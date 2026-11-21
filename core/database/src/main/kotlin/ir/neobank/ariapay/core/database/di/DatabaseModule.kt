@@ -9,7 +9,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ir.neobank.ariapay.core.database.AriaDatabase
+import ir.neobank.ariapay.core.database.cards.CardsCacheDao
 import ir.neobank.ariapay.core.database.profile.UserProfileDao
+import ir.neobank.ariapay.core.database.wallet.WalletBalanceCacheDao
 import javax.inject.Singleton
 
 @Module
@@ -32,4 +34,14 @@ internal object DatabaseModule {
     @Singleton
     fun provideUserProfileDao(database: AriaDatabase): UserProfileDao =
         database.userProfileDao()
+
+    @Provides
+    @Singleton
+    fun provideWalletBalanceCacheDao(database: AriaDatabase): WalletBalanceCacheDao =
+        database.walletBalanceCacheDao()
+
+    @Provides
+    @Singleton
+    fun provideCardsCacheDao(database: AriaDatabase): CardsCacheDao =
+        database.cardsCacheDao()
 }

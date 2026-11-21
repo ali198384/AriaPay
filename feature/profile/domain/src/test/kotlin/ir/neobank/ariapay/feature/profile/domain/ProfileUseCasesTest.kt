@@ -82,7 +82,7 @@ class ProfileUseCasesTest {
             kycLevel = "BASIC",
             kycStatus = "NOT_STARTED",
             accountStatus = "ACTIVE",
-            serverUpdatedAtEpochMillis = null
+            serverUpdatedAt = null
         )
         var updateNameCallCount = 0
         var canUpdatePhoto = true

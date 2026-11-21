@@ -3,5 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.core.model)
+    api(projects.core.common)
+    api(projects.core.model)
+    api(libs.kotlinx.coroutines.core)
 }

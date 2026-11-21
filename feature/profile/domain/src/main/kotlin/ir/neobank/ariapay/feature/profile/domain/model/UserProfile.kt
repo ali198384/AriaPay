@@ -1,5 +1,7 @@
 package ir.neobank.ariapay.feature.profile.domain.model
 
+import kotlin.time.Instant
+
 /** Profile data exposed to the rest of the app, independent of Room and network DTOs. */
 data class UserProfile(
     val userId: String,
@@ -11,7 +13,7 @@ data class UserProfile(
     val kycLevel: String,
     val kycStatus: String,
     val accountStatus: String,
-    val serverUpdatedAtEpochMillis: Long?,
+    val serverUpdatedAt: Instant?,
 ) {
     init {
         require(userId.isNotBlank()) { "User ID must not be blank" }

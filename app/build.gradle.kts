@@ -45,6 +45,8 @@ dependencies {
     implementation(projects.feature.applock.data)
     implementation(projects.feature.profile.presentation)
     implementation(projects.feature.profile.data)
+    implementation(projects.feature.wallet.data)
+    implementation(projects.feature.cards.data)
     implementation(projects.core.common)
     implementation(projects.core.model)
     implementation(projects.core.session)

@@ -3,6 +3,7 @@ package ir.neobank.ariapay.core.database.profile
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlin.time.Instant
 
 /**
  * Local cache of a backend profile. [userId] is the server-issued stable ID;
@@ -30,5 +31,5 @@ data class UserProfileEntity(
     @ColumnInfo(name = "account_status")
     val accountStatus: String,
     @ColumnInfo(name = "server_updated_at_epoch_millis")
-    val serverUpdatedAtEpochMillis: Long?
+    val serverUpdatedAt: Instant?
 )

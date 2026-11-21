@@ -3,10 +3,10 @@ package ir.neobank.ariapay.feature.profile.data.repository
 import ir.neobank.ariapay.core.database.profile.UserProfileDao
 import ir.neobank.ariapay.core.database.profile.UserProfileEntity
 import ir.neobank.ariapay.core.datastore.AriaPreferencesDataSource
-import ir.neobank.ariapay.feature.profile.domain.repository.ProfileRepository
-import ir.neobank.ariapay.feature.profile.domain.model.UserProfile
-import ir.neobank.ariapay.feature.profile.domain.ProfilePhotoStorage
 import ir.neobank.ariapay.core.session.SessionManager
+import ir.neobank.ariapay.feature.profile.domain.ProfilePhotoStorage
+import ir.neobank.ariapay.feature.profile.domain.model.UserProfile
+import ir.neobank.ariapay.feature.profile.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -51,7 +51,7 @@ private fun UserProfileEntity.toDomain() = UserProfile(
     kycLevel = kycLevel,
     kycStatus = kycStatus,
     accountStatus = accountStatus,
-    serverUpdatedAtEpochMillis = serverUpdatedAtEpochMillis,
+    serverUpdatedAt = serverUpdatedAt,
 )
 
 private fun UserProfile.toEntity() = UserProfileEntity(
@@ -64,5 +64,5 @@ private fun UserProfile.toEntity() = UserProfileEntity(
     kycLevel = kycLevel,
     kycStatus = kycStatus,
     accountStatus = accountStatus,
-    serverUpdatedAtEpochMillis = serverUpdatedAtEpochMillis,
+    serverUpdatedAt = serverUpdatedAt,
 )

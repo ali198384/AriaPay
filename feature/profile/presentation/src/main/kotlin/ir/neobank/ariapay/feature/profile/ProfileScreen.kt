@@ -798,6 +798,6 @@ private val previewProfileState = ProfileUiState(
         kycLevel = "LEVEL_2",
         kycStatus = "VERIFIED",
         accountStatus = "ACTIVE",
-        serverUpdatedAtEpochMillis = null,
+        serverUpdatedAt = null,
     ),
 )
