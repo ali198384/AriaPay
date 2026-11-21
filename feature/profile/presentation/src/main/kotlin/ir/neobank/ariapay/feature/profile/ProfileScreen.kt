@@ -1,5 +1,6 @@
 package ir.neobank.ariapay.feature.profile
 
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -349,12 +350,16 @@ private fun ProfileAvatar(profile: UserProfile, isUpdating: Boolean, onClick: ()
             AsyncImage(
                 model = photoFile,
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize().clip(CircleShape),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape),
                 contentScale = ContentScale.Crop,
             )
         }
         Surface(
-            modifier = Modifier.align(Alignment.BottomEnd).size(30.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .size(30.dp),
             shape = CircleShape,
             color = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -532,7 +537,9 @@ private fun ProfileErrorState(error: ProfileUiError, onRetry: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 32.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -675,7 +682,7 @@ private fun ActionErrorText(error: ProfileActionError) {
 private fun AppVersionCard(versionName: String) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.62f),
+        color = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         shape = RoundedCornerShape(18.dp),
     ) {
@@ -741,6 +748,13 @@ private fun String.normalizedStatus(): String =
 private const val MAX_NAME_LENGTH = 60
 
 @Preview(showBackground = true, name = "Profile - Compact", widthDp = 393, heightDp = 852)
+@Preview(
+    showBackground = true,
+    name = "Profile - Compact",
+    widthDp = 393,
+    heightDp = 852,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
 private fun ProfileScreenCompactPreview() {
     AriaTheme {
