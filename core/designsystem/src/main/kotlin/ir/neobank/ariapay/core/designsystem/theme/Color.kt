@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 // برند آریاپِی — نئوبانک
 internal val AriaBlue = Color(0xFF0B4F8A)
 internal val AriaBlueDark = Color(0xFF072F54)
-internal val AriaBlueLight = Color(0xFF64B5F6)
+internal val AriaBlueLight = Color(0xFF1976D2)
 
 internal val AriaGold = Color(0xFFC9A227)
 internal val AriaGoldDark = Color(0xFF8C7014)

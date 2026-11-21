@@ -47,7 +47,7 @@ private val LightColors = lightColorScheme(
 
 private val DarkColors = darkColorScheme(
     primary = AriaBlueLight,
-    onPrimary = AriaBlueDark,
+    onPrimary = Color.White,
     primaryContainer = AriaBlueDark,
     onPrimaryContainer = Color(0xFFD4E5F7),
     secondary = Color(0xFFE0C36A),
