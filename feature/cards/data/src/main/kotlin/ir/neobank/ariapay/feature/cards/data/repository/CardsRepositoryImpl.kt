@@ -53,7 +53,7 @@ class CardsRepositoryImpl(
                     cacheDao.replaceSnapshot(
                         userId = normalizedUserId,
                         cards = cards.map { it.toEntity(normalizedUserId) },
-                        metadata = metadata,
+                        metadata = metadata
                     )
                     AriaResult.Success(Unit)
                 }

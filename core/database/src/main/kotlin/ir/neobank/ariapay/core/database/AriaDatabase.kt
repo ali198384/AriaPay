@@ -20,7 +20,7 @@ import ir.neobank.ariapay.core.database.wallet.WalletBalanceCacheEntity
         CachedPaymentCardEntity::class,
         CardsCacheMetadataEntity::class,
     ],
-    version = 2,
+    version = 1
 )
 @TypeConverters(InstantTypeConverter::class, CacheSyncStatusTypeConverter::class)
 abstract class AriaDatabase : RoomDatabase() {
